@@ -4,7 +4,7 @@ namespace Chat.API.Services.UserRepositories
 {
     public interface IUserRepository
     {
-        Task<User> GetByUsername(string username);
+        Task<User> GetByUserId(string userId);
 
         Task<User> Create(User user);
     }

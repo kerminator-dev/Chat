@@ -8,16 +8,22 @@ namespace Chat.API.Services.UserRepositories
 
         public Task<User> Create(User user)
         {
-            user.Id = Guid.NewGuid();
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            if (_users.Any(u => u.UserId == user.UserId))
+                throw new ArithmeticException("User with this username already exist");
+
+            user.RegisteredDateTime = DateTime.UtcNow;
 
             _users.Add(user);
 
             return Task.FromResult(user);
         }
 
-        public Task<User> GetByUsername(string username)
+        public Task<User> GetByUserId(string userId)
         {
-            return Task.FromResult(_users.FirstOrDefault(u => u.Username == username));
+            return Task.FromResult(_users.FirstOrDefault(u => u.UserId == userId));
         }
     }
 }

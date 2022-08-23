@@ -4,8 +4,8 @@
     {
         public IEnumerable<string> ErrorsMessages { get; set; }
 
-        public ErrorResponce(string errorMessage) 
-            : this (new List<string>() { errorMessage })
+        public ErrorResponce(string errorMessage)
+            : this(new List<string>() { errorMessage })
         {
 
         }
