@@ -1,16 +1,16 @@
 ﻿namespace Chat.API.Models.Responses
 {
-    public class ErrorResponce
+    public class ErrorResponse
     {
         public IEnumerable<string> ErrorsMessages { get; set; }
 
-        public ErrorResponce(string errorMessage)
+        public ErrorResponse(string errorMessage)
             : this(new List<string>() { errorMessage })
         {
 
         }
 
-        public ErrorResponce(IEnumerable<string> errorsMessages)
+        public ErrorResponse(IEnumerable<string> errorsMessages)
         {
             ErrorsMessages = errorsMessages;
         }

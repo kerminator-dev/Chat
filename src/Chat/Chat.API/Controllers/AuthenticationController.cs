@@ -4,12 +4,8 @@ using Chat.API.Models.Responses;
 using Chat.API.Services.Authenticators;
 using Chat.API.Services.PasswordHashers;
 using Chat.API.Services.RefreshTokenRepositories;
-using Chat.API.Services.TokenGenerators;
 using Chat.API.Services.TokenValidators;
-using Chat.API.Services.UserRepositories;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Chat.API.Controllers
 {
@@ -17,19 +13,17 @@ namespace Chat.API.Controllers
     [ApiController]
     public class AuthenticationController : Controller
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IPasswordHasher _passwordHasher;
-        private readonly Authenticator _authenticator;
+        private readonly AuthenticationProvider _authenticationProvider;
         private readonly RefreshTokenValidator _refreshTokenValidator;
+        private readonly IPasswordHasher _passwordHasher;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
 
-        public AuthenticationController(IUserRepository userRepository, IPasswordHasher passwordHasher, RefreshTokenValidator refreshTokenValidator, IRefreshTokenRepository refreshTokenRepository, Authenticator authenticator)
+        public AuthenticationController(RefreshTokenValidator refreshTokenValidator, IRefreshTokenRepository refreshTokenRepository, AuthenticationProvider authenticator, IPasswordHasher passwordHasher)
         {
-            _userRepository = userRepository;
-            _passwordHasher = passwordHasher;
             _refreshTokenValidator = refreshTokenValidator;
             _refreshTokenRepository = refreshTokenRepository;
-            _authenticator = authenticator;
+            _authenticationProvider = authenticator;
+            _passwordHasher = passwordHasher;
         }
 
         [HttpPost("Register")]
@@ -40,21 +34,13 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
-            User existingUserByUsername = await _userRepository.GetByUserId(registerRequest.UserId);
+            User existingUserByUsername = await _authenticationProvider.GetUser(registerRequest.UserId);
             if (existingUserByUsername != null)
             {
-                return Conflict(new ErrorResponce("Username already exists."));
+                return Conflict(new ErrorResponse("Username already exists."));
             }
 
-            string passwordHash = _passwordHasher.HashPassword(registerRequest.Password);
-            User registrationUser = new User()
-            {
-                UserId = registerRequest.UserId,
-                PasswordHash = passwordHash,
-                GivenName = registerRequest.GivenName,
-            };
-
-            await _userRepository.Create(registrationUser);
+            await _authenticationProvider.RegisterUser(registerRequest);
 
             return Ok();
         }
@@ -67,7 +53,7 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
-            User user = await _userRepository.GetByUserId(loginRequest.UserId);
+            User user = await _authenticationProvider.GetUser(loginRequest.UserId);
             if (user == null)
             {
                 return Unauthorized();
@@ -79,7 +65,7 @@ namespace Chat.API.Controllers
                 return Unauthorized();
             }
 
-            AuthenticatedUserResponce response = await _authenticator.Authenticate(user);
+            AuthenticatedUserResponce response = await _authenticationProvider.AuthenticateUser(user);
 
             return Ok(response);
         }
@@ -95,24 +81,24 @@ namespace Chat.API.Controllers
             bool isValidRefreshToken = _refreshTokenValidator.Validate(refreshTokenRequest.RefreshToken);
             if (!isValidRefreshToken)
             {
-                return BadRequest(new ErrorResponce("Invalid refresh token"));
+                return BadRequest(new ErrorResponse("Invalid refresh token"));
             }
 
-            RefreshToken refreshTokenDTO = await _refreshTokenRepository.GetByToken(refreshTokenRequest.RefreshToken);
-            if (refreshTokenDTO == null)
+            RefreshToken tonen = await _refreshTokenRepository.GetByToken(refreshTokenRequest.RefreshToken);
+            if (tonen == null)
             {
-                return NotFound(new ErrorResponce("Invalid refresh token"));
+                return NotFound(new ErrorResponse("Invalid refresh token"));
             }
 
-            await _refreshTokenRepository.Delete(refreshTokenDTO.Id);
+            await _refreshTokenRepository.Delete(tonen.Id);
 
-            User user = await _userRepository.GetByUserId(refreshTokenDTO.UserId);  
+            User user = await _authenticationProvider.GetUser(tonen.UserId);  
             if (user == null)
             {
-                return NotFound(new ErrorResponce("User not found"));
+                return NotFound(new ErrorResponse("User not found"));
             }
 
-            AuthenticatedUserResponce response = await _authenticator.Authenticate(user);
+            AuthenticatedUserResponce response = await _authenticationProvider.AuthenticateUser(user);
 
             return Ok(response);
         }
@@ -121,7 +107,7 @@ namespace Chat.API.Controllers
         {
             IEnumerable<string> errorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
 
-            return BadRequest(new ErrorResponce(errorMessages));
+            return BadRequest(new ErrorResponse(errorMessages));
         }
     }
 }
