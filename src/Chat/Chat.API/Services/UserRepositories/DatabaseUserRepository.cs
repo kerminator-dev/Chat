@@ -1,5 +1,5 @@
 ﻿using Chat.API.DbContexts;
-using Chat.API.Models;
+using Chat.API.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Chat.API.Services.UserRepositories
@@ -24,7 +24,7 @@ namespace Chat.API.Services.UserRepositories
             return user; 
         }
 
-        public async Task<User> GetByUserId(string userId)
+        public async Task<User> GetByUserId(int userId)
         {
             return await _dbContext.Users.FindAsync(userId);
         }

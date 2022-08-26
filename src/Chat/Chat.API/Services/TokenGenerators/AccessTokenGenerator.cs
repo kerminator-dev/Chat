@@ -1,4 +1,5 @@
-﻿using Chat.API.Models;
+﻿using Chat.API.Entities;
+using Chat.API.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -21,7 +22,7 @@ namespace Chat.API.Services.TokenGenerators
         {
             List<Claim> claims = new List<Claim>()
             {
-                new Claim("id", user.UserId),
+                new Claim("id", user.UserId.ToString()),
                 new Claim(ClaimTypes.GivenName, user.GivenName)
             };
 

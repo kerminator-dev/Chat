@@ -1,5 +1,5 @@
 ﻿using Chat.API.DbContexts;
-using Chat.API.Models;
+using Chat.API.Entities;
 
 namespace Chat.API.Services.MessageRepositories
 {

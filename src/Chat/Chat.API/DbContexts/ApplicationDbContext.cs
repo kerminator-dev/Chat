@@ -1,4 +1,4 @@
-﻿using Chat.API.Models;
+﻿using Chat.API.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Chat.API.DbContexts
@@ -9,6 +9,7 @@ namespace Chat.API.DbContexts
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Connection> Connections { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<Conversation> Conversations { get; set; }
 
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
@@ -19,7 +20,12 @@ namespace Chat.API.DbContexts
         {
             // User
             modelBuilder.Entity<User>()
-                .HasKey(u => u.UserId);
+                .HasIndex(u => u.UserId)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.UserId)
+                .ValueGeneratedOnAdd();
 
             modelBuilder.Entity<User>()
                 .Property(u => u.GivenName)
@@ -31,15 +37,29 @@ namespace Chat.API.DbContexts
 
             // RefreshToken
             modelBuilder.Entity<RefreshToken>()
-                .HasIndex(t => t.Id);
+                .HasIndex(t => t.RefreshTokenId)
+                .IsUnique();
+
+            modelBuilder.Entity<RefreshToken>()
+                .Property(t => t.RefreshTokenId)
+                .ValueGeneratedOnAdd();
 
             // Connection
             modelBuilder.Entity<Connection>()
-                .HasIndex(c => c.ConnectionID);
+                .HasIndex(c => new { c.UserId, c.ConnectionId } );
 
             // Message
             modelBuilder.Entity<Message>()
-                .HasIndex(m => m.Id);
+                .HasIndex(m => m.MessageId);
+
+            // Conversation
+            modelBuilder.Entity<Conversation>()
+                .HasIndex(c => c.ConversationId)
+                .IsUnique();
+
+            modelBuilder.Entity<Conversation>()
+                .Property(c => c.ConversationId)
+                .ValueGeneratedOnAdd();
         }
     }
 }

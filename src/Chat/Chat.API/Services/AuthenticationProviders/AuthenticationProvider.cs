@@ -1,4 +1,5 @@
-﻿using Chat.API.Models;
+﻿using Chat.API.Entities;
+using Chat.API.Models;
 using Chat.API.Models.Requests;
 using Chat.API.Models.Responses;
 using Chat.API.Services.PasswordHashers;
@@ -63,7 +64,18 @@ namespace Chat.API.Services.Authenticators
             );
         }
 
-        public async Task<User> GetUser(string userId)
+        public async Task<User?> GetHttpContextUser(HttpContent httpContent)
+        {
+            if (!int.TryParse(httpContent.User.FindFirstValue("id"), out int userId))
+            {
+                return null;
+            }
+
+            return await this.GetUser(userId);
+
+        }
+
+        public async Task<User> GetUser(int userId)
         {
             return await _userRepository.GetByUserId(userId);
         }

@@ -1,4 +1,4 @@
-﻿using Chat.API.Models;
+﻿using Chat.API.Entities;
 
 namespace Chat.API.Services.UserRepositories
 {
@@ -21,7 +21,7 @@ namespace Chat.API.Services.UserRepositories
             return Task.FromResult(user);
         }
 
-        public Task<User> GetByUserId(string userId)
+        public Task<User> GetByUserId(int userId)
         {
             return Task.FromResult(_users.FirstOrDefault(u => u.UserId == userId));
         }

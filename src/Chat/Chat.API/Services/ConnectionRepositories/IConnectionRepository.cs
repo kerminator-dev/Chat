@@ -1,5 +1,5 @@
 ﻿using Chat.API.DbContexts;
-using Chat.API.Models;
+using Chat.API.Entities;
 
 namespace Chat.API.Services.ConnectionRepositories
 {
@@ -7,6 +7,6 @@ namespace Chat.API.Services.ConnectionRepositories
     {
 
 
-        Task<ICollection<Connection>> GetUserConnections(string userId);
+        Task<ICollection<Connection>> GetUserConnections(int userId);
     }
 }

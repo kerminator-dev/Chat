@@ -1,6 +1,5 @@
 ﻿using Chat.API.DbContexts;
-using Chat.API.Models;
-using Chat.API.Models.Requests;
+using Chat.API.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +8,9 @@ using System.Security.Claims;
 
 namespace Chat.API.Hubs
 {
+    /// <summary>
+    /// Хаб, расчитанный на рассылку сообщений пользователям
+    /// </summary>
     [Authorize]
     public class ChatHub : Hub
     {
@@ -17,12 +19,6 @@ namespace Chat.API.Hubs
         public ChatHub(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
-        }
-
-        [Authorize]
-        public async Task SendMessage(SendMessageRequest message)
-        {
-            
         }
 
         public override async Task OnConnectedAsync()
@@ -37,23 +33,20 @@ namespace Chat.API.Hubs
             if (user == null)
                 return;
 
-
-
-
             await _dbContext.Entry(user)
                 .Collection(u => u.Connections)
                 .LoadAsync();
 
-            string userAgent = Context.GetHttpContext()
+            string userAgent = Context.GetHttpContext()?
                                 .Request
                                 .Headers["User-Agent"]
-                                .FirstOrDefault(string.Empty);
+                                .FirstOrDefault(string.Empty) ?? String.Empty;
 
             user.Connections.Add
             (
                 new Connection
                 {
-                    ConnectionID = Context.ConnectionId,
+                    ConnectionId = Context.ConnectionId,
                     UserId = user.UserId,
                     UserAgent = userAgent ?? string.Empty,
                     Connected = true
@@ -77,13 +70,12 @@ namespace Chat.API.Hubs
             if (user == null)
                 return;
 
-            var connection = _dbContext.Connections.Find(Context.ConnectionId);
+            var connection = await _dbContext.Connections.FindAsync(Context.ConnectionId);
 
             if (connection == null)
                 return;
 
-            _dbContext.Connections.Remove(connection);
-
+            connection.Connected = false;
 
             _dbContext.SaveChanges();
         }

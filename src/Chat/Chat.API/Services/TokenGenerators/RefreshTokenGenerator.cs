@@ -1,4 +1,5 @@
-﻿using Chat.API.Models;
+﻿using Chat.API.Entities;
+using Chat.API.Models;
 using System.Security.Claims;
 
 namespace Chat.API.Services.TokenGenerators

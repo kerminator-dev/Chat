@@ -1,5 +1,5 @@
 ﻿using Chat.API.DbContexts;
-using Chat.API.Models;
+using Chat.API.Entities;
 using Chat.API.Models.Requests;
 using Chat.API.Services.ConnectionRepositories;
 using Chat.API.Services.MessageRepositories;

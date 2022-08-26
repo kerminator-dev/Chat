@@ -1,4 +1,4 @@
-﻿using Chat.API.Models;
+﻿using Chat.API.Entities;
 
 namespace Chat.API.Services.RefreshTokenRepositories
 {
@@ -24,12 +24,12 @@ namespace Chat.API.Services.RefreshTokenRepositories
 
         public Task Delete(int id)
         {
-            _refreshTokens.RemoveAll(t => t.Id == id);
+            _refreshTokens.RemoveAll(t => t.RefreshTokenId == id);
 
             return Task.CompletedTask;
         }
 
-        public Task DeleteAllUserTokens(string userId)
+        public Task DeleteAllUserTokens(int userId)
         {
             _refreshTokens.RemoveAll(t => t.UserId == userId);
 

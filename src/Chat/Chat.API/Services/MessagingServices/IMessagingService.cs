@@ -1,5 +1,4 @@
-﻿using Chat.API.Models;
-using Chat.API.Models.Requests;
+﻿using Chat.API.Entities;
 
 namespace Chat.API.Services.MessagingServices
 {

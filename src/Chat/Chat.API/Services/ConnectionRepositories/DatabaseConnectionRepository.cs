@@ -1,5 +1,5 @@
 ﻿using Chat.API.DbContexts;
-using Chat.API.Models;
+using Chat.API.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Chat.API.Services.ConnectionRepositories
@@ -13,7 +13,7 @@ namespace Chat.API.Services.ConnectionRepositories
             _dbContext = dbContext;
         }
 
-        public async Task<ICollection<Connection>> GetUserConnections(string userId)
+        public async Task<ICollection<Connection>> GetUserConnections(int userId)
         {
             return await _dbContext.Connections.Where(c => c.UserId == userId).ToListAsync();
         }

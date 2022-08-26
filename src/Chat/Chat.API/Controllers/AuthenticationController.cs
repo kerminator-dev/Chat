@@ -1,4 +1,4 @@
-﻿using Chat.API.Models;
+﻿using Chat.API.Entities;
 using Chat.API.Models.Requests;
 using Chat.API.Models.Responses;
 using Chat.API.Services.Authenticators;
@@ -90,7 +90,7 @@ namespace Chat.API.Controllers
                 return NotFound(new ErrorResponse("Invalid refresh token"));
             }
 
-            await _refreshTokenRepository.Delete(tonen.Id);
+            await _refreshTokenRepository.Delete(tonen.RefreshTokenId);
 
             User user = await _authenticationProvider.GetUser(tonen.UserId);  
             if (user == null)
@@ -103,6 +103,7 @@ namespace Chat.API.Controllers
             return Ok(response);
         }
 
+        // Переделать
         private IActionResult BadRequestModelState()
         {
             IEnumerable<string> errorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));

@@ -1,4 +1,5 @@
 ﻿using Chat.API.DbContexts;
+using Chat.API.Entities;
 using Chat.API.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;

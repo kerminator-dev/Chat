@@ -1,4 +1,5 @@
-﻿using Chat.API.Models;
+﻿using Chat.API.Entities;
+using Chat.API.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;

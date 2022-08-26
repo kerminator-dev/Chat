@@ -4,7 +4,7 @@ namespace Chat.API.Models.Requests
 {
     public class RefreshTokenRequest
     {
-        [Required]
+        [Required(ErrorMessage = "Refresh token is required!")]
         public string RefreshToken { get; set; }
     }
 }

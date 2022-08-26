@@ -1,10 +1,10 @@
-﻿using Chat.API.Models.Requests;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Chat.API.Models.Responses;
 using Chat.API.Services.Messangers;
 using Chat.API.Services.Authenticators;
+using Chat.API.Models.Requests;
+using Chat.API.Models.Responses;
 
 namespace Chat.API.Controllers
 {
@@ -22,6 +22,14 @@ namespace Chat.API.Controllers
             _authenticationProvider = authenticationProvider;
         }
 
+        /// <summary>
+        /// Можно сделать реализацию отправки сообщений и через SignalR Hub,
+        /// Но при отсутствующем подключении к хабу не получится отправить сообщение 
+        /// И хотя бы внести его в БД
+        /// Поэтому отправка сообщения реализована через API-метод
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         [HttpPost("Send")]
         [Authorize]
         public async Task<IActionResult> Send(SendMessageRequest message)
@@ -31,8 +39,7 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
-            var userId = HttpContext.User.FindFirstValue("id");
-            if (userId == null)
+            if (!int.TryParse(HttpContext.User.FindFirstValue("id"), out int userId))
             {
                 return NotFound(new ErrorResponse("User not found"));
             }
@@ -54,6 +61,14 @@ namespace Chat.API.Controllers
             return Ok();
         }
 
+        [HttpPost("Get")]
+        private async Task<IActionResult> GetMessages()
+        {
+            return Ok();
+        }
+
+
+        // Переделать
         private IActionResult BadRequestModelState()
         {
             IEnumerable<string> errorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));

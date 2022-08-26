@@ -1,6 +1,5 @@
 ﻿using Chat.API.Hubs;
-using Chat.API.Models;
-using Chat.API.Models.Requests;
+using Chat.API.Entities;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +18,7 @@ namespace Chat.API.Services.MessagingServices
         {
             foreach (var connection in receiver.Connections)
             {
-               await _hubContext.Clients.Client(connection.ConnectionID).SendAsync("ReceiveMessage", message);
+               await _hubContext.Clients.Client(connection.ConnectionId).SendAsync("ReceiveMessage", message);
             }
         }
     }
