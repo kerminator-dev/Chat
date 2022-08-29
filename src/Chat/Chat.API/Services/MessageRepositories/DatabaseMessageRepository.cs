@@ -22,7 +22,8 @@ namespace Chat.API.Services.MessageRepositories
 
         public async Task<ICollection<DialogueMessage>> GetMessages(Dialogue dialogue, int count, int offset = 0)
         {
-            return await _dbContext.Messages.Where(m => m.DialogueId == dialogue.Id).Take(count).ToListAsync();
+            return await _dbContext.Messages.Where(m => m.DialogueId == dialogue.Id).OrderByDescending(m => m.Id).Skip(offset).Take(count).ToListAsync();
+           // return await _dbContext.Messages.Where(m => m.DialogueId == dialogue.Id).TakeLast(count).ToListAsync();
         }
     }
 }

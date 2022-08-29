@@ -1,4 +1,6 @@
-﻿using Chat.API.Entities;
+﻿using Chat.API.DTOs;
+using Chat.API.Entities;
+using Chat.API.Exceptions;
 using Chat.API.Models.Responses;
 using Chat.API.Services.DialogueRepositories;
 
@@ -18,11 +20,17 @@ namespace Chat.API.Services.Providers
         public async Task<DialoguesResponse> GetAll(User user)
         {
             var dialogues = await _dialogueRepository.GetAll(user);
+            if (dialogues == null || dialogues.Count == 0)
+                throw new ProcessingException("Dialogues not found!");
+
+            var dialoguesWithLastMessages = await _dialogueRepository.GetDialoguesWithLastMessages(user);
+            if (dialoguesWithLastMessages == null || dialoguesWithLastMessages.Count == 0)
+                throw new ProcessingException("Dialogues not found!");
 
             var dialoguesResponse = new DialoguesResponse()
             {
                 UserId = user.Id,
-                Dialogues = dialogues
+                Dialogues = ToDialogsWithMessages(dialoguesWithLastMessages)
             };
 
             return dialoguesResponse;
@@ -32,7 +40,7 @@ namespace Chat.API.Services.Providers
         {
             // Проверка - существует ли уже указанный диалог
             if (await _dialogueRepository.Any(dialogueMember, dialogueCreator))
-                return;
+                throw new ProcessingException("Dialog already exist!");
 
             var dialogue = new Dialogue()
             {
@@ -42,6 +50,42 @@ namespace Chat.API.Services.Providers
             };
 
            await _dialogueRepository.Create(dialogue);
+        }
+
+        private ICollection<DialogueWithLastMessageDTO> ToDialogsWithMessages(ICollection<Dialogue> dialogues)
+        {
+            List<DialogueWithLastMessageDTO> result = new List<DialogueWithLastMessageDTO>();
+
+            foreach (var dialogue in dialogues)
+            {
+                result.Add
+                (
+                    new DialogueWithLastMessageDTO()
+                    {
+                        Created = dialogue.Created,
+                        Id = dialogue.Id,
+                        CreatorId = dialogue.CreatorId,
+                        MemberId = dialogue.MemberId,
+                        LastMessage = ToDialogueMessageDTO(dialogue.Messages.FirstOrDefault())
+                    }
+                );
+            }
+
+            return result;
+        }
+
+        private DialogueMessageDTO ToDialogueMessageDTO(DialogueMessage dialogueMessage)
+        {
+            if (dialogueMessage == null)
+                return null;
+
+            return new DialogueMessageDTO()
+            {
+                Id = dialogueMessage.Id,
+                SenderId = dialogueMessage.SenderId,
+                Content = dialogueMessage.Content,
+                Created = dialogueMessage.CreatedDate
+            };
         }
     }
 }

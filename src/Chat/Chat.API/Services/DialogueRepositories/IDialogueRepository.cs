@@ -1,4 +1,5 @@
-﻿using Chat.API.Entities;
+﻿using Chat.API.DTOs;
+using Chat.API.Entities;
 
 namespace Chat.API.Services.DialogueRepositories
 {
@@ -13,5 +14,7 @@ namespace Chat.API.Services.DialogueRepositories
         Task AddMessage(Dialogue dialogue, DialogueMessage message);
 
         Task<bool> Any(User user1, User user2);
+
+        Task<ICollection<Dialogue>> GetDialoguesWithLastMessages(User user);
     }
 }

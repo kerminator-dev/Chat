@@ -1,4 +1,5 @@
 ﻿using Chat.API.DbContexts;
+using Chat.API.DTOs;
 using Chat.API.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,21 +46,6 @@ namespace Chat.API.Services.DialogueRepositories
             return await _dbContext
                         .Dialogues
                         .FirstOrDefaultAsync(d => d.Id == dialogueId && (d.MemberId == user.Id || d.CreatorId == user.Id));
-
-          //  // Диалоги, в которых пользователь является создателем
-          //  var createdDialogues = await _dbContext.Dialogues.FirstOrDefaultAsync(d => d.Id == dialogueId && d.CreatorUserId == user.Id);
-          //  // Диалоги, в которых пользователь приглашён
-          //  var invitedDialogues = await _dbContext.Dialogues.FirstOrDefaultAsync(d => d.Id == dialogueId && d.MemberUserId == user.Id));
-
-            //return null;
-           //
-           // if (user.CreatorDialogues == null)
-           //     await this.LoadDialogues(user);
-           //
-           // var dialogue = user.CreatorDialogues
-           //                 .FirstOrDefault(d => d.Id == dialogueId);
-           //
-           // return dialogue;
         }
 
         public async Task<bool> Any(User user1, User user2)
@@ -69,6 +55,18 @@ namespace Chat.API.Services.DialogueRepositories
                     .AnyAsync(d => 
                         (d.CreatorId == user1.Id && d.MemberId == user2.Id) || 
                         (d.MemberId == user1.Id && d.CreatorId == user2.Id));
+        }
+
+        public async Task<ICollection<Dialogue>> GetDialoguesWithLastMessages(User user)
+        {
+            //return await _dbContext.Dialogues
+            //             .Where(d => d.CreatorId == user.Id || d.MemberId == user.Id)
+            //             .Include(d => d.Messages.OrderByDescending(m => m.Id).Take(1))
+            //             .ToListAsync();
+            return await _dbContext.Dialogues
+                         .Where(d => d.CreatorId == user.Id || d.MemberId == user.Id)
+                         .Include(d => d.Messages.TakeLast(1))
+                         .ToListAsync();
         }
     }
 }

@@ -24,6 +24,7 @@ namespace Chat.API.Entities
         /// </summary>
         public int MemberId { get; set; }
 
+        public virtual List<DialogueMessage> Messages { get; set; }
 
        // public virtual User Creator { get; set; }
        // public virtual User Member { get; set; }

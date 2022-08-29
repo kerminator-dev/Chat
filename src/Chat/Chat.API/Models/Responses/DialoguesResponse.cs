@@ -1,4 +1,5 @@
-﻿using Chat.API.Entities;
+﻿using Chat.API.DTOs;
+using Chat.API.Entities;
 
 namespace Chat.API.Models.Responses
 {
@@ -6,8 +7,8 @@ namespace Chat.API.Models.Responses
     {
         public int UserId { get; set; }
 
-        public ICollection<Dialogue> Dialogues { get; set; }
+        public ICollection<DialogueWithLastMessageDTO> Dialogues { get; set; }
 
-        public int Count => Dialogues.Count;
+        public int Count => Dialogues == null ? 0 : Dialogues.Count;
     }
 }

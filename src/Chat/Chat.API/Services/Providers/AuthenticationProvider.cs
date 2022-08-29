@@ -8,7 +8,6 @@ using Chat.API.Services.TokenGenerators;
 using Chat.API.Services.TokenValidators;
 using Chat.API.Services.UserRepositories;
 using System.Security.Claims;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Chat.API.Services.Providers
 {

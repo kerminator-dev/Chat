@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Chat.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220829001144_initial")]
+    [Migration("20220829094310_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -83,6 +83,8 @@ namespace Chat.API.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DialogueId");
 
                     b.HasIndex("Id");
 
@@ -184,6 +186,15 @@ namespace Chat.API.Migrations
                     b.ToTable("ConversationUser");
                 });
 
+            modelBuilder.Entity("Chat.API.Entities.DialogueMessage", b =>
+                {
+                    b.HasOne("Chat.API.Entities.Dialogue", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("DialogueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Chat.API.Entities.HubConnection", b =>
                 {
                     b.HasOne("Chat.API.Entities.User", null)
@@ -206,6 +217,11 @@ namespace Chat.API.Migrations
                         .HasForeignKey("MembersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Chat.API.Entities.Dialogue", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("Chat.API.Entities.User", b =>

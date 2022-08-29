@@ -82,6 +82,8 @@ namespace Chat.API.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DialogueId");
+
                     b.HasIndex("Id");
 
                     b.ToTable("Messages");
@@ -182,6 +184,15 @@ namespace Chat.API.Migrations
                     b.ToTable("ConversationUser");
                 });
 
+            modelBuilder.Entity("Chat.API.Entities.DialogueMessage", b =>
+                {
+                    b.HasOne("Chat.API.Entities.Dialogue", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("DialogueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Chat.API.Entities.HubConnection", b =>
                 {
                     b.HasOne("Chat.API.Entities.User", null)
@@ -204,6 +215,11 @@ namespace Chat.API.Migrations
                         .HasForeignKey("MembersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Chat.API.Entities.Dialogue", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("Chat.API.Entities.User", b =>

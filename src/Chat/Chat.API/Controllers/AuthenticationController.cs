@@ -1,10 +1,10 @@
 ﻿using Chat.API.Entities;
+using Chat.API.Exceptions;
 using Chat.API.Models.Requests;
 using Chat.API.Models.Responses;
 using Chat.API.Services.PasswordHashers;
 using Chat.API.Services.Providers;
 using Chat.API.Services.RefreshTokenRepositories;
-using Chat.API.Services.TokenValidators;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chat.API.Controllers
@@ -38,7 +38,14 @@ namespace Chat.API.Controllers
                 return Conflict(new ErrorResponse("Username already exists."));
             }
 
-            await _authenticationProvider.RegisterUser(registerRequest);
+            try
+            {
+                await _authenticationProvider.RegisterUser(registerRequest);
+            }
+            catch (ProcessingException ex)
+            {
+                return Conflict(new ErrorResponse(ex.Message));
+            }
 
             return Ok();
         }
@@ -63,9 +70,16 @@ namespace Chat.API.Controllers
                 return Unauthorized();
             }
 
-            AuthenticatedUserResponse response = await _authenticationProvider.AuthenticateUser(user);
+            try
+            { 
+                AuthenticatedUserResponse response = await _authenticationProvider.AuthenticateUser(user);
 
-            return Ok(response);
+                return Ok(response);
+            }
+            catch (ProcessingException ex)
+            {
+                return Conflict(new ErrorResponse(ex.Message));
+            }
         }
 
         [HttpPost("RefreshToken")]
@@ -85,7 +99,7 @@ namespace Chat.API.Controllers
             RefreshToken token = await _refreshTokenRepository.GetByToken(refreshTokenRequest.RefreshToken);
             if (token == null)
             {
-                return NotFound(new ErrorResponse("Invalid refresh token"));
+                return BadRequest(new ErrorResponse("Invalid refresh token"));
             }
 
             await _refreshTokenRepository.Delete(token.Id);
@@ -96,9 +110,16 @@ namespace Chat.API.Controllers
                 return NotFound(new ErrorResponse("User not found"));
             }
 
-            AuthenticatedUserResponse response = await _authenticationProvider.AuthenticateUser(user);
+            try
+            { 
+                AuthenticatedUserResponse response = await _authenticationProvider.AuthenticateUser(user);
 
-            return Ok(response);
+                return Ok(response);
+            }
+            catch (ProcessingException ex)
+            {
+                return Conflict(new ErrorResponse(ex.Message));
+            }
         }
 
 

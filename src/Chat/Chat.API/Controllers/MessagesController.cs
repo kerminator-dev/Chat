@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using Chat.API.Models.Requests;
 using Chat.API.Models.Responses;
 using Chat.API.Services.Providers;
-using Chat.API.Services.DialogueRepositories;
-using System.Reflection;
+using Chat.API.Exceptions;
 
 namespace Chat.API.Controllers
 {
@@ -38,7 +36,14 @@ namespace Chat.API.Controllers
                 return NotFound(new ErrorResponse("User not found!"));
             }
 
-            await _messageProvider.SendMessage(messageSender, message);
+            try
+            {
+                await _messageProvider.SendMessage(messageSender, message);
+            }
+            catch (ProcessingException ex)
+            {
+                return BadRequest(new ErrorResponse(ex.Message));
+            }
 
             return Ok();
         }
@@ -58,13 +63,17 @@ namespace Chat.API.Controllers
                 return NotFound(new ErrorResponse("User not found!"));
             }
 
-            var messagesResponse = await _messageProvider.GetMessages(user, getMessagesRequest);
-            if (messagesResponse == null || messagesResponse.Messages == null)
+            try
             {
-                return NotFound(new ErrorResponse("Messages not found!"));
+                var messagesResponse = await _messageProvider.GetMessages(user, getMessagesRequest);
+
+                return Ok(messagesResponse);
+            }
+            catch (ProcessingException ex)
+            {
+                return BadRequest(new ErrorResponse(ex.Message));
             }
             
-            return Ok(messagesResponse);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Chat.API.Entities;
+using Chat.API.Exceptions;
 using Chat.API.Models.Requests;
 using Chat.API.Models.Responses;
 using Chat.API.Services.Providers;
@@ -22,7 +23,7 @@ namespace Chat.API.Controllers
             _dialogueProvider = dialogueProvider;
         }
 
-        [HttpGet("GetAll")]
+        [HttpGet("All")]
         [Authorize]
         public async Task<IActionResult> GetAllDialogues()
         {
@@ -37,9 +38,16 @@ namespace Chat.API.Controllers
                 return NotFound(new ErrorResponse("User not found"));
             }
 
-            var userDialoguesResponce = await _dialogueProvider.GetAll(user);
+            try
+            {
+                var userDialoguesResponce = await _dialogueProvider.GetAll(user);
 
-            return Ok(userDialoguesResponce);
+                return Ok(userDialoguesResponce);
+            }
+            catch (ProcessingException ex)
+            {
+                return BadRequest(new ErrorResponse(ex.Message));
+            }
         }
 
         [HttpPost("Create")]
@@ -68,9 +76,16 @@ namespace Chat.API.Controllers
                 return BadRequest(new ErrorResponse("Cannot create dialog with yourself! (may be later)"));
             }
 
-            await _dialogueProvider.Create(requester, targetUser);
+            try
+            {
+                await _dialogueProvider.Create(requester, targetUser);
 
-            return Ok();
+                return Ok();
+            }
+            catch (ProcessingException ex)
+            {
+                return BadRequest(new ErrorResponse(ex.Message));
+            }
         }
     }
 }
