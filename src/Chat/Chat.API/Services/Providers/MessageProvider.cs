@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chat.API.Services.Providers
 {
+    // TODO - Обработка и возвращение ошибок
+
     public class MessageProvider
     {
         private readonly IMessageRepository _messageRepository;
@@ -41,10 +43,9 @@ namespace Chat.API.Services.Providers
             if (dialogue == null)
                 return;
 
-           //
-           // var receiver = dialogue.Members.FirstOrDefault(m => m.Id != sender.Id);
-           // if (receiver == null)
-           //     return;
+            var receiver = await _userRepository.Get(GetReceiverId(dialogue, sender));
+            if (receiver == null)
+                return;
 
             var messageModel = new DialogueMessage()
             {
@@ -58,7 +59,7 @@ namespace Chat.API.Services.Providers
             await _dialogueRepository.AddMessage(dialogue, messageModel);
 
             // Отправка
-            // await _messagingService.SendMessage(receiver, messageModel);
+            await _messagingService.SendMessage(receiver, messageModel);
         }
 
         public async Task<GetMessagesResponse> GetMessages(User user, GetMessagesRequest getMessagesRequest)
@@ -73,6 +74,14 @@ namespace Chat.API.Services.Providers
             {
                 Messages = messages
             };
+        }
+
+        private int GetReceiverId(Dialogue dialogue, User sender)
+        {
+            if (dialogue.CreatorId == sender.Id)
+                return dialogue.MemberId;
+
+            return dialogue.CreatorId;
         }
     }
 }

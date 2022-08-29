@@ -4,6 +4,8 @@ using Chat.API.Services.DialogueRepositories;
 
 namespace Chat.API.Services.Providers
 {
+    // TODO - Обработка и возвращение ошибок
+
     public class DialogueProvider
     {
         private readonly IDialogueRepository _dialogueRepository;
