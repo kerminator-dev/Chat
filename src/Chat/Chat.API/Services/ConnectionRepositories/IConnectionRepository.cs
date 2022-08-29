@@ -7,6 +7,6 @@ namespace Chat.API.Services.ConnectionRepositories
     {
 
 
-        Task<ICollection<Connection>> GetUserConnections(int userId);
+        Task<ICollection<HubConnection>> GetUserConnections(int userId);
     }
 }

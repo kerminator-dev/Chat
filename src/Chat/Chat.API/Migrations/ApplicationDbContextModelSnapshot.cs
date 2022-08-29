@@ -17,9 +17,79 @@ namespace Chat.API.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.8");
 
-            modelBuilder.Entity("Chat.API.Entities.Connection", b =>
+            modelBuilder.Entity("Chat.API.Entities.Conversation", b =>
                 {
-                    b.Property<string>("ConnectionId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.ToTable("Conversations");
+                });
+
+            modelBuilder.Entity("Chat.API.Entities.Dialogue", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("CreatorId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.ToTable("Dialogues");
+                });
+
+            modelBuilder.Entity("Chat.API.Entities.DialogueMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DialogueId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id");
+
+                    b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("Chat.API.Entities.HubConnection", b =>
+                {
+                    b.Property<string>("Id")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("Connected")
@@ -32,63 +102,16 @@ namespace Chat.API.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("ConnectionId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("UserId", "ConnectionId");
+                    b.HasIndex("UserId", "Id");
 
                     b.ToTable("Connections");
                 });
 
-            modelBuilder.Entity("Chat.API.Entities.Conversation", b =>
-                {
-                    b.Property<int>("ConversationId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ConversationId");
-
-                    b.HasIndex("ConversationId")
-                        .IsUnique();
-
-                    b.ToTable("Conversations");
-                });
-
-            modelBuilder.Entity("Chat.API.Entities.Message", b =>
-                {
-                    b.Property<int>("MessageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("ReceiverId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("SenderId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("MessageId");
-
-                    b.HasIndex("MessageId");
-
-                    b.ToTable("Messages");
-                });
-
             modelBuilder.Entity("Chat.API.Entities.RefreshToken", b =>
                 {
-                    b.Property<int>("RefreshTokenId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -102,9 +125,9 @@ namespace Chat.API.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("RefreshTokenId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("RefreshTokenId")
+                    b.HasIndex("Id")
                         .IsUnique();
 
                     b.ToTable("RefreshTokens");
@@ -112,14 +135,12 @@ namespace Chat.API.Migrations
 
             modelBuilder.Entity("Chat.API.Entities.User", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("GivenName")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .IsUnicode(false)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PasswordHash")
@@ -129,9 +150,18 @@ namespace Chat.API.Migrations
                     b.Property<DateTime>("RegisteredDateTime")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("UserId");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("TEXT");
 
-                    b.HasIndex("UserId")
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("Username")
                         .IsUnique();
 
                     b.ToTable("Users");
@@ -139,20 +169,20 @@ namespace Chat.API.Migrations
 
             modelBuilder.Entity("ConversationUser", b =>
                 {
-                    b.Property<int>("ConversationsConversationId")
+                    b.Property<int>("ConversationsId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("UsersUserId")
+                    b.Property<int>("MembersId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("ConversationsConversationId", "UsersUserId");
+                    b.HasKey("ConversationsId", "MembersId");
 
-                    b.HasIndex("UsersUserId");
+                    b.HasIndex("MembersId");
 
                     b.ToTable("ConversationUser");
                 });
 
-            modelBuilder.Entity("Chat.API.Entities.Connection", b =>
+            modelBuilder.Entity("Chat.API.Entities.HubConnection", b =>
                 {
                     b.HasOne("Chat.API.Entities.User", null)
                         .WithMany("Connections")
@@ -165,13 +195,13 @@ namespace Chat.API.Migrations
                 {
                     b.HasOne("Chat.API.Entities.Conversation", null)
                         .WithMany()
-                        .HasForeignKey("ConversationsConversationId")
+                        .HasForeignKey("ConversationsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Chat.API.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("UsersUserId")
+                        .HasForeignKey("MembersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

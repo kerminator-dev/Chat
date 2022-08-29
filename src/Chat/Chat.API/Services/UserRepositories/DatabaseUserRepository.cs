@@ -24,9 +24,14 @@ namespace Chat.API.Services.UserRepositories
             return user; 
         }
 
-        public async Task<User> GetByUserId(int userId)
+        public async Task<User> Get(int userId)
         {
             return await _dbContext.Users.FindAsync(userId);
+        }
+
+        public async Task<User> Get(string username)
+        {
+            return await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
         }
     }
 }

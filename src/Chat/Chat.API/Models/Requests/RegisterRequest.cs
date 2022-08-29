@@ -4,8 +4,10 @@ namespace Chat.API.Models.Requests
 {
     public class RegisterRequest
     {
-        [Required(ErrorMessage = "User id is required!")]
-        public int UserId { get; set; }
+        [Required(ErrorMessage = "Username is required!")]
+        [MinLength(4, ErrorMessage = "Min username length is 4 characters!")]
+        [MaxLength(10, ErrorMessage = "Max username length is 10 characters!")]
+        public string Username { get; set; }
 
         [Required(ErrorMessage = "Password is required!")]
         [MinLength(6, ErrorMessage = "Min password length is 6 characters!")]
@@ -15,6 +17,6 @@ namespace Chat.API.Models.Requests
         [Required(ErrorMessage = "Given name is required!")]
         [MinLength(2, ErrorMessage = "Min name length is 2 characters!")]
         [MaxLength(20, ErrorMessage = "Max name length is 20 characters!")]
-        public string GivenName { get; set; }
+        public string Name { get; set; }
     }
 }

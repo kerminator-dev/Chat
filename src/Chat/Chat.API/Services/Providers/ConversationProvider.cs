@@ -2,7 +2,7 @@
 using Chat.API.Models.Requests;
 using Chat.API.Services.ConversationRepositories;
 
-namespace Chat.API.Services.ConversationProviders
+namespace Chat.API.Services.Providers
 {
     public class ConversationProvider
     {
@@ -20,7 +20,7 @@ namespace Chat.API.Services.ConversationProviders
 
         public async Task CreateConversation(CreateConversationRequest createConversationRequest, User requestor)
         {
-
+            return;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Chat.API.Models.Responses;
-using Chat.API.Services.ConversationProviders;
+using Chat.API.Services.Providers;
 using Chat.API.Services.UserRepositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +10,7 @@ namespace Chat.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ConversationsController : ControllerBase
+    public class ConversationsController : Controllers.ControllerBase
     {
         private readonly ConversationProvider _conversationProvider;
         private readonly IUserRepository _userRepository;
@@ -35,7 +35,7 @@ namespace Chat.API.Controllers
                 return NotFound(new ErrorResponse("User not found"));
             }
 
-            var user = await _userRepository.GetByUserId(userId);
+            var user = await _userRepository.Get(userId);
             if (user == null)
             {
                 return NotFound(new ErrorResponse("User not found"));
@@ -44,14 +44,6 @@ namespace Chat.API.Controllers
             var responce =  await _conversationProvider.GetAllUserConversations(user);
 
             return Ok(responce);
-        }
-
-        // Переделать
-        private IActionResult BadRequestModelState()
-        {
-            IEnumerable<string> errorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
-
-            return BadRequest(new ErrorResponse(errorMessages));
         }
     }
 }

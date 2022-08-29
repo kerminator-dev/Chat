@@ -44,10 +44,10 @@ namespace Chat.API.Hubs
 
             user.Connections.Add
             (
-                new Connection
+                new HubConnection
                 {
-                    ConnectionId = Context.ConnectionId,
-                    UserId = user.UserId,
+                    Id = Context.ConnectionId,
+                    UserId = user.Id,
                     UserAgent = userAgent ?? string.Empty,
                     Connected = true
                 }

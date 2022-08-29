@@ -4,9 +4,11 @@ namespace Chat.API.Models.Requests
 {
     public class LoginRequest
     {
-        [Required(ErrorMessage = "User id is required!")]
-        public int UserId { get; set; }
-
+        [Required(ErrorMessage = "Username is required!")]
+        [MinLength(4, ErrorMessage = "Min username length is 4 characters!")]
+        [MaxLength(10, ErrorMessage = "Max username length is 10 characters!")]
+        public string Username { get; set; }
+        
         [Required(ErrorMessage = "Password is required!")]
         [MinLength(6, ErrorMessage = "Min password length is 6 characters!")]
         [MaxLength(20, ErrorMessage = "Max password length is 20 characters!")]

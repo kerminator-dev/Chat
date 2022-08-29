@@ -1,7 +1,11 @@
-﻿namespace Chat.API.Models.Responses
+﻿using Chat.API.Entities;
+
+namespace Chat.API.Models.Responses
 {
-    public class AuthenticatedUserResponce
+    public class AuthenticatedUserResponse
     {
+        public UserResponse User { get; set; }
+
         /// <summary>
         /// Токен доступа
         /// </summary>
@@ -24,8 +28,9 @@
         /// </summary>
         public double RefreshTokenExpirationMinutes { get; set; }
 
-        public AuthenticatedUserResponce(string accessToken, double accessTokenExpirationMinutes, string refreshToken, double refreshTokenExpirationMinutes)
+        public AuthenticatedUserResponse(UserResponse user, string accessToken, double accessTokenExpirationMinutes, string refreshToken, double refreshTokenExpirationMinutes)
         {
+            User = user;
             AccessToken = accessToken;
             AccessTokenExpirationMinutes = accessTokenExpirationMinutes;
             RefreshToken = refreshToken;

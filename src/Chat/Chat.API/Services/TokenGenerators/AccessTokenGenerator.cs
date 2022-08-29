@@ -22,8 +22,7 @@ namespace Chat.API.Services.TokenGenerators
         {
             List<Claim> claims = new List<Claim>()
             {
-                new Claim("id", user.UserId.ToString()),
-                new Claim(ClaimTypes.GivenName, user.GivenName)
+                new Claim("id", user.Id.ToString())
             };
 
             return _tokenGenerator.GenerateToken

@@ -7,9 +7,10 @@ using Chat.API.Services.RefreshTokenRepositories;
 using Chat.API.Services.TokenGenerators;
 using Chat.API.Services.TokenValidators;
 using Chat.API.Services.UserRepositories;
+using System.Security.Claims;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
-namespace Chat.API.Services.Authenticators
+namespace Chat.API.Services.Providers
 {
     public class AuthenticationProvider
     {
@@ -22,12 +23,12 @@ namespace Chat.API.Services.Authenticators
         private readonly IUserRepository _userRepository;
 
         public AuthenticationProvider(AccessTokenGenerator accessTokenGenerator,
-                             RefreshTokenGenerator refreshTokenGenerator,
-                             IRefreshTokenRepository refreshTokenRepository,
-                             AuthenticationConfiguration authenticationConfiguration,
-                             IPasswordHasher passwordHasher,
-                             IUserRepository userRepository,
-                             RefreshTokenValidator refreshTokenValidator)
+                                 RefreshTokenGenerator refreshTokenGenerator,
+                                 IRefreshTokenRepository refreshTokenRepository,
+                                 AuthenticationConfiguration authenticationConfiguration,
+                                 IPasswordHasher passwordHasher,
+                                 IUserRepository userRepository,
+                                 RefreshTokenValidator refreshTokenValidator)
         {
             _accessTokenGenerator = accessTokenGenerator;
             _refreshTokenGenerator = refreshTokenGenerator;
@@ -38,7 +39,12 @@ namespace Chat.API.Services.Authenticators
             _refreshTokenValidator = refreshTokenValidator;
         }
 
-        public async Task<AuthenticatedUserResponce> AuthenticateUser(User user)
+        /// <summary>
+        /// Выполнить аутентификацию
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public async Task<AuthenticatedUserResponse> AuthenticateUser(User user)
         {
             string accessToken = _accessTokenGenerator.GenerateToken(user);
             string refreshToken = _refreshTokenGenerator.GenerateToken();
@@ -46,7 +52,7 @@ namespace Chat.API.Services.Authenticators
             var refreshTokenDTO = new RefreshToken()
             {
                 Token = refreshToken,
-                UserId = user.UserId,
+                UserId = user.Id,
                 ExpirationDateTime = DateTime.UtcNow.AddMinutes(_authenticationConfiguration.RefreshTokenExpirationMinutes),
             };
 
@@ -55,8 +61,14 @@ namespace Chat.API.Services.Authenticators
                 refreshToken: refreshTokenDTO
             );
 
-            return new AuthenticatedUserResponce
+            return new AuthenticatedUserResponse
             (
+                user: new UserResponse()
+                { 
+                    Id = user.Id,
+                    Username = user.Username,
+                    Name = user.Name
+                },
                 accessToken: accessToken,
                 accessTokenExpirationMinutes: _authenticationConfiguration.AccessTokenExpirationMinutes,
                 refreshToken: refreshToken,
@@ -64,33 +76,62 @@ namespace Chat.API.Services.Authenticators
             );
         }
 
-        public async Task<User?> GetHttpContextUser(HttpContent httpContent)
+        /// <summary>
+        /// Получить пользователя из HttpContext'а контекста 
+        /// </summary>
+        /// <param name="httpContextUser"></param>
+        /// <returns></returns>
+        public async Task<User> GetHttpContextUser(ClaimsPrincipal httpContextUser)
         {
-            if (!int.TryParse(httpContent.User.FindFirstValue("id"), out int userId))
+            if (!int.TryParse(httpContextUser.FindFirstValue("id"), out int userId))
             {
                 return null;
             }
 
-            return await this.GetUser(userId);
-
+            return await GetUser(userId);
         }
 
+        /// <summary>
+        /// Получить пользователя по ID
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<User> GetUser(int userId)
         {
-            return await _userRepository.GetByUserId(userId);
+            return await _userRepository.Get(userId);
         }
 
+        /// <summary>
+        /// Проучмит пользователя по Username
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        public async Task<User> GetUser(string username)
+        {
+            return await _userRepository.Get(username);
+        }
+
+        /// <summary>
+        /// Зарегистрировать пользователя
+        /// </summary>
+        /// <param name="registerRequest"></param>
+        /// <returns></returns>
         public async Task RegisterUser(RegisterRequest registerRequest)
         {
             string passwordHash = _passwordHasher.HashPassword(registerRequest.Password);
-            User registrationUser = new User()
+            User user = new User()
             {
-                UserId = registerRequest.UserId,
+                Username = registerRequest.Username,
                 PasswordHash = passwordHash,
-                GivenName = registerRequest.GivenName,
+                Name = registerRequest.Name,
             };
 
-            await _userRepository.Create(registrationUser);
+            await _userRepository.Create(user);
+        }
+
+        public bool ValidateRefreshToken(string refreshToken)
+        {
+            return _refreshTokenValidator.Validate(refreshToken);
         }
     }
 }

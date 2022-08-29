@@ -13,7 +13,7 @@ namespace Chat.API.Services.ConnectionRepositories
             _dbContext = dbContext;
         }
 
-        public async Task<ICollection<Connection>> GetUserConnections(int userId)
+        public async Task<ICollection<HubConnection>> GetUserConnections(int userId)
         {
             return await _dbContext.Connections.Where(c => c.UserId == userId).ToListAsync();
         }

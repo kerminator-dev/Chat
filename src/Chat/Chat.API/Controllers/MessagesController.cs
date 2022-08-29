@@ -1,17 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Chat.API.Services.Messangers;
-using Chat.API.Services.Authenticators;
 using Chat.API.Models.Requests;
 using Chat.API.Models.Responses;
+using Chat.API.Services.Providers;
+using Chat.API.Services.DialogueRepositories;
+using System.Reflection;
 
 namespace Chat.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     
-    public class MessagesController : ControllerBase
+    public class MessagesController : Controllers.ControllerBase
     {
         private readonly MessageProvider _messageProvider;
         private readonly AuthenticationProvider _authenticationProvider;
@@ -22,14 +23,6 @@ namespace Chat.API.Controllers
             _authenticationProvider = authenticationProvider;
         }
 
-        /// <summary>
-        /// Можно сделать реализацию отправки сообщений и через SignalR Hub,
-        /// Но при отсутствующем подключении к хабу не получится отправить сообщение 
-        /// И хотя бы внести его в БД
-        /// Поэтому отправка сообщения реализована через API-метод
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
         [HttpPost("Send")]
         [Authorize]
         public async Task<IActionResult> Send(SendMessageRequest message)
@@ -39,41 +32,39 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
-            if (!int.TryParse(HttpContext.User.FindFirstValue("id"), out int userId))
-            {
-                return NotFound(new ErrorResponse("User not found"));
-            }
-
-            var messageSender = await _authenticationProvider.GetUser(userId);
+            var messageSender = await _authenticationProvider.GetHttpContextUser(HttpContext.User);
             if (messageSender == null)
             {
-                return NotFound(new ErrorResponse("User not found"));
+                return NotFound(new ErrorResponse("User not found!"));
             }
 
-            var messageReceiver = await _authenticationProvider.GetUser(message.ReceiverId);
-            if (messageReceiver == null)
-            {
-                return NotFound(new ErrorResponse("Receiver not found"));
-            }
-
-            await _messageProvider.SendMessage(messageSender, messageReceiver, message);
+            await _messageProvider.SendMessage(messageSender, message);
 
             return Ok();
         }
 
         [HttpPost("Get")]
-        private async Task<IActionResult> GetMessages()
+        [Authorize]
+        public async Task<IActionResult> GetMessages(GetMessagesRequest getMessagesRequest)
         {
-            return Ok();
-        }
+            if (!ModelState.IsValid)
+            {
+                return BadRequestModelState();
+            }
 
+            var user = await _authenticationProvider.GetHttpContextUser(HttpContext.User);
+            if (user == null)
+            {
+                return NotFound(new ErrorResponse("User not found!"));
+            }
 
-        // Переделать
-        private IActionResult BadRequestModelState()
-        {
-            IEnumerable<string> errorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
-
-            return BadRequest(new ErrorResponse(errorMessages));
+            var messagesResponse = await _messageProvider.GetMessages(user, getMessagesRequest);
+            if (messagesResponse == null || messagesResponse.Messages == null)
+            {
+                return NotFound(new ErrorResponse("Messages not found!"));
+            }
+            
+            return Ok(messagesResponse);
         }
     }
 }

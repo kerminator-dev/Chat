@@ -24,7 +24,7 @@ namespace Chat.API.Services.RefreshTokenRepositories
 
         public Task Delete(int id)
         {
-            _refreshTokens.RemoveAll(t => t.RefreshTokenId == id);
+            _refreshTokens.RemoveAll(t => t.Id == id);
 
             return Task.CompletedTask;
         }

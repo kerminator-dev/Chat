@@ -14,11 +14,14 @@ namespace Chat.API.Services.MessagingServices
             _hubContext = hubContext;
         }
 
-        public async Task SendMessage(User receiver, Message message)
+        public async Task SendMessage(User receiver, DialogueMessage message)
         {
+            if (receiver.Connections == null)
+                return;
+
             foreach (var connection in receiver.Connections)
             {
-               await _hubContext.Clients.Client(connection.ConnectionId).SendAsync("ReceiveMessage", message);
+               await _hubContext.Clients.Client(connection.Id).SendAsync("ReceiveMessage", message);
             }
         }
     }

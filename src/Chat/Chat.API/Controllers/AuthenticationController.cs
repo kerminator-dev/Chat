@@ -1,8 +1,8 @@
 ﻿using Chat.API.Entities;
 using Chat.API.Models.Requests;
 using Chat.API.Models.Responses;
-using Chat.API.Services.Authenticators;
 using Chat.API.Services.PasswordHashers;
+using Chat.API.Services.Providers;
 using Chat.API.Services.RefreshTokenRepositories;
 using Chat.API.Services.TokenValidators;
 using Microsoft.AspNetCore.Mvc;
@@ -11,16 +11,14 @@ namespace Chat.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthenticationController : Controller
+    public class AuthenticationController : Controllers.ControllerBase
     {
         private readonly AuthenticationProvider _authenticationProvider;
-        private readonly RefreshTokenValidator _refreshTokenValidator;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
 
-        public AuthenticationController(RefreshTokenValidator refreshTokenValidator, IRefreshTokenRepository refreshTokenRepository, AuthenticationProvider authenticator, IPasswordHasher passwordHasher)
+        public AuthenticationController(IRefreshTokenRepository refreshTokenRepository, AuthenticationProvider authenticator, IPasswordHasher passwordHasher)
         {
-            _refreshTokenValidator = refreshTokenValidator;
             _refreshTokenRepository = refreshTokenRepository;
             _authenticationProvider = authenticator;
             _passwordHasher = passwordHasher;
@@ -34,7 +32,7 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
-            User existingUserByUsername = await _authenticationProvider.GetUser(registerRequest.UserId);
+            User existingUserByUsername = await _authenticationProvider.GetUser(registerRequest.Username);
             if (existingUserByUsername != null)
             {
                 return Conflict(new ErrorResponse("Username already exists."));
@@ -53,7 +51,7 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
-            User user = await _authenticationProvider.GetUser(loginRequest.UserId);
+            User user = await _authenticationProvider.GetUser(loginRequest.Username);
             if (user == null)
             {
                 return Unauthorized();
@@ -65,7 +63,7 @@ namespace Chat.API.Controllers
                 return Unauthorized();
             }
 
-            AuthenticatedUserResponce response = await _authenticationProvider.AuthenticateUser(user);
+            AuthenticatedUserResponse response = await _authenticationProvider.AuthenticateUser(user);
 
             return Ok(response);
         }
@@ -78,37 +76,31 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
-            bool isValidRefreshToken = _refreshTokenValidator.Validate(refreshTokenRequest.RefreshToken);
+            bool isValidRefreshToken = _authenticationProvider.ValidateRefreshToken(refreshTokenRequest.RefreshToken);
             if (!isValidRefreshToken)
             {
                 return BadRequest(new ErrorResponse("Invalid refresh token"));
             }
 
-            RefreshToken tonen = await _refreshTokenRepository.GetByToken(refreshTokenRequest.RefreshToken);
-            if (tonen == null)
+            RefreshToken token = await _refreshTokenRepository.GetByToken(refreshTokenRequest.RefreshToken);
+            if (token == null)
             {
                 return NotFound(new ErrorResponse("Invalid refresh token"));
             }
 
-            await _refreshTokenRepository.Delete(tonen.RefreshTokenId);
+            await _refreshTokenRepository.Delete(token.Id);
 
-            User user = await _authenticationProvider.GetUser(tonen.UserId);  
+            User user = await _authenticationProvider.GetUser(token.UserId);  
             if (user == null)
             {
                 return NotFound(new ErrorResponse("User not found"));
             }
 
-            AuthenticatedUserResponce response = await _authenticationProvider.AuthenticateUser(user);
+            AuthenticatedUserResponse response = await _authenticationProvider.AuthenticateUser(user);
 
             return Ok(response);
         }
 
-        // Переделать
-        private IActionResult BadRequestModelState()
-        {
-            IEnumerable<string> errorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
 
-            return BadRequest(new ErrorResponse(errorMessages));
-        }
     }
 }

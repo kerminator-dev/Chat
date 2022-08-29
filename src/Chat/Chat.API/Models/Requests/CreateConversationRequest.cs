@@ -13,6 +13,6 @@ namespace Chat.API.Models.Requests
         [Required(ErrorMessage = "Conversation members are required!")]
         [MinLength(1, ErrorMessage = "Minimal cnversation members is 1 user except creator!")]      // + 1 - Текущий пользователь
         [MaxLength(4, ErrorMessage = "Maximal conversations memebers is 4 users except creator!")]  // + 1 - Текущий пользователь
-        public ICollection<User> ConversationMembers { get; set; }
+        public ICollection<int> ConversationMembersIds { get; set; }
     }
 }

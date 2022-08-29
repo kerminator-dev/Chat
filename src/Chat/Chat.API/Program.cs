@@ -1,11 +1,11 @@
 using Chat.API.Extensions;
 using Chat.API.Hubs;
-using Chat.API.Services.Authenticators;
 using Chat.API.Services.ConnectionRepositories;
+using Chat.API.Services.DialogueRepositories;
 using Chat.API.Services.MessageRepositories;
 using Chat.API.Services.MessagingServices;
-using Chat.API.Services.Messangers;
 using Chat.API.Services.PasswordHashers;
+using Chat.API.Services.Providers;
 using Chat.API.Services.RefreshTokenRepositories;
 using Chat.API.Services.TokenGenerators;
 using Chat.API.Services.TokenValidators;
@@ -33,6 +33,8 @@ builder.Services.AddScoped<IConnectionRepository, DatabaseConnectionRepository>(
 builder.Services.AddScoped<IMessageRepository, DatabaseMessageRepository>();
 builder.Services.AddScoped<IMessagingService, SignalRMessagingService>();
 builder.Services.AddScoped<MessageProvider>();
+builder.Services.AddScoped<DialogueProvider>();
+builder.Services.AddScoped<IDialogueRepository, DatabaseDialogueRepository>();
 
 
 var app = builder.Build();

@@ -1,8 +1,8 @@
 ﻿namespace Chat.API.Entities
 {
-    public class Connection
+    public class HubConnection
     {
-        public string ConnectionId { get; set; }
+        public string Id { get; set; }
         public int UserId { get; set; }
         public string UserAgent { get; set; }
         public bool Connected { get; set; }
