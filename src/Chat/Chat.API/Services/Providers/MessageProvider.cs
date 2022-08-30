@@ -1,15 +1,13 @@
-﻿using Chat.API.DbContexts;
-using Chat.API.DTOs;
+﻿using Chat.API.DTOs;
 using Chat.API.Entities;
 using Chat.API.Exceptions;
+using Chat.API.Helpers;
 using Chat.API.Models.Requests;
 using Chat.API.Models.Responses;
-using Chat.API.Services.ConnectionRepositories;
 using Chat.API.Services.DialogueRepositories;
 using Chat.API.Services.MessageRepositories;
 using Chat.API.Services.MessagingServices;
 using Chat.API.Services.UserRepositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace Chat.API.Services.Providers
 {
@@ -32,18 +30,17 @@ namespace Chat.API.Services.Providers
 
         public async Task SendMessage(User sender, SendMessageRequest message)
         {
-            var dialogues = await _dialogueRepository.GetAll(sender);
-            if (dialogues == null || dialogues.Count == 0)
-                throw new ProcessingException("Dialogues not found!");
-
-            var dialogue = dialogues.FirstOrDefault(d => d.Id == message.DialogueId);
+            // Получние диалога
+            var dialogue = await _dialogueRepository.Get(sender, message.DialogueId);
             if (dialogue == null)
                 throw new ProcessingException("Dialogue not found!");
 
-            var receiver = await _userRepository.Get(GetReceiverId(dialogue, sender));
+            // Получение получателя/второго участника диалога
+            var receiver = await _userRepository.Get(DialogueHelper.GetSecondDialogueMemberId(dialogue, sender.Id));
             if (receiver == null)
-                throw new ProcessingException("Unknown receiver!");
+                throw new ProcessingException("Receiver not found!");
 
+            // Инициализация модели DialogueMessage
             var messageModel = new DialogueMessage()
             {
                 SenderId = sender.Id,
@@ -55,34 +52,31 @@ namespace Chat.API.Services.Providers
             // Запись в БД
             await _dialogueRepository.AddMessage(dialogue, messageModel);
 
-            // Отправка
+            // Отправка сообщения участнику диалога
+            await _messagingService.SendMessage(receiver, messageModel);
+
+            // Отправка сообщения отправителю
             await _messagingService.SendMessage(receiver, messageModel);
         }
 
         public async Task<GetMessagesResponse> GetMessages(User user, GetMessagesRequest getMessagesRequest)
         {
+            // Получение диалога
             var dialogue = await _dialogueRepository.Get(user, getMessagesRequest.DialogueId);
             if (dialogue == null)
                 throw new ProcessingException("Dialogue not found!");
 
+            // Получение списка сообщений диалога
             var messages = await _messageRepository.GetMessages(dialogue, getMessagesRequest.Count, getMessagesRequest.Offset);
             if (messages == null || messages.Count == 0)
                 throw new ProcessingException("No messages!");
 
-            
+            // Возврат результата выполнения
             return new GetMessagesResponse()
             {
                 DialogueId = dialogue.Id,
                 Messages = ToDialogueMessageDTOs(messages)
             };
-        }
-
-        private static int GetReceiverId(Dialogue dialogue, User sender)
-        {
-            if (dialogue.CreatorId == sender.Id)
-                return dialogue.MemberId;
-
-            return dialogue.CreatorId;
         }
 
         private static ICollection<DialogueMessageDTO> ToDialogueMessageDTOs(ICollection<DialogueMessage> dialogueMessages)
@@ -91,13 +85,16 @@ namespace Chat.API.Services.Providers
 
             foreach (var message in dialogueMessages)
             {
-                messageDTOs.Add(new DialogueMessageDTO()
-                {
-                    Id = message.Id,
-                    Content = message.Content,
-                    Created = message.CreatedDate,
-                    SenderId = message.SenderId
-                });
+                messageDTOs.Add
+                (
+                    new DialogueMessageDTO()
+                    {
+                        Id = message.Id,
+                        Content = message.Content,
+                        Created = message.CreatedDate,
+                        SenderId = message.SenderId
+                    }
+                );
             }
 
             return messageDTOs;

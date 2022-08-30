@@ -17,5 +17,15 @@ namespace Chat.API.Services.ConnectionRepositories
         {
             return await _dbContext.Connections.Where(c => c.UserId == userId).ToListAsync();
         }
+
+        public async Task<User> LoadConnections(User user)
+        {
+            if (user == null)
+                return user;
+
+            await _dbContext.Entry(user).Collection(u => u.Connections).LoadAsync();
+
+            return user;
+        }
     }
 }

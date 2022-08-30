@@ -4,7 +4,7 @@ namespace Chat.API.Models.Responses
 {
     public class AuthenticatedUserResponse
     {
-        public UserResponse User { get; set; }
+        public UserDTO User { get; set; }
 
         /// <summary>
         /// Токен доступа
@@ -28,7 +28,7 @@ namespace Chat.API.Models.Responses
         /// </summary>
         public double RefreshTokenExpirationMinutes { get; set; }
 
-        public AuthenticatedUserResponse(UserResponse user, string accessToken, double accessTokenExpirationMinutes, string refreshToken, double refreshTokenExpirationMinutes)
+        public AuthenticatedUserResponse(UserDTO user, string accessToken, double accessTokenExpirationMinutes, string refreshToken, double refreshTokenExpirationMinutes)
         {
             User = user;
             AccessToken = accessToken;

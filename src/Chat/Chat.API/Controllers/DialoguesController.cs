@@ -25,7 +25,7 @@ namespace Chat.API.Controllers
 
         [HttpGet("All")]
         [Authorize]
-        public async Task<IActionResult> GetAllDialogues()
+        public async Task<IActionResult> GetAll()
         {
             if (!ModelState.IsValid)
             {
@@ -85,6 +85,33 @@ namespace Chat.API.Controllers
             catch (ProcessingException ex)
             {
                 return BadRequest(new ErrorResponse(ex.Message));
+            }
+        }
+
+        [HttpDelete("Delete")]
+        [Authorize]
+        public async Task<IActionResult> Delete(DeleteDialogueRequest deleteDialogueRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequestModelState();
+            }
+
+            var requester = await _authenticationProvider.GetHttpContextUser(HttpContext.User);
+            if (requester == null)
+            {
+                return NotFound(new ErrorResponse("User not found"));
+            }
+
+            try
+            {
+                await _dialogueProvider.Delete(requester, deleteDialogueRequest);
+
+                return Ok();
+            }
+            catch (ProcessingException ex)
+            {
+                return Conflict(new ErrorResponse(ex.Message));
             }
         }
     }

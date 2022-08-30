@@ -59,13 +59,9 @@ namespace Chat.API.Services.DialogueRepositories
 
         public async Task<ICollection<Dialogue>> GetDialoguesWithLastMessages(User user)
         {
-            //return await _dbContext.Dialogues
-            //             .Where(d => d.CreatorId == user.Id || d.MemberId == user.Id)
-            //             .Include(d => d.Messages.OrderByDescending(m => m.Id).Take(1))
-            //             .ToListAsync();
             return await _dbContext.Dialogues
                          .Where(d => d.CreatorId == user.Id || d.MemberId == user.Id)
-                         .Include(d => d.Messages.TakeLast(1))
+                         .Include(d => d.Messages.OrderByDescending(m => m.Id).Take(1))
                          .ToListAsync();
         }
     }

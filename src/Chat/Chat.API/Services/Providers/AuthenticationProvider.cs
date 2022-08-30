@@ -13,12 +13,12 @@ namespace Chat.API.Services.Providers
 {
     public class AuthenticationProvider
     {
-        private readonly AccessTokenGenerator _accessTokenGenerator;
+        private readonly AuthenticationConfiguration _authenticationConfiguration;
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly RefreshTokenGenerator _refreshTokenGenerator;
         private readonly RefreshTokenValidator _refreshTokenValidator;
-        private readonly IRefreshTokenRepository _refreshTokenRepository;
+        private readonly AccessTokenGenerator _accessTokenGenerator;
         private readonly IPasswordHasher _passwordHasher;
-        private readonly AuthenticationConfiguration _authenticationConfiguration;
         private readonly IUserRepository _userRepository;
 
         public AuthenticationProvider(AccessTokenGenerator accessTokenGenerator,
@@ -45,24 +45,28 @@ namespace Chat.API.Services.Providers
         /// <returns></returns>
         public async Task<AuthenticatedUserResponse> AuthenticateUser(User user)
         {
+            // Генерация access-токена для пользователя
             string accessToken = _accessTokenGenerator.GenerateToken(user);
             string refreshToken = _refreshTokenGenerator.GenerateToken();
 
-            var refreshTokenDTO = new RefreshToken()
+            // Инициализация модели
+            var refreshTokenModel = new RefreshToken()
             {
                 Token = refreshToken,
                 UserId = user.Id,
                 ExpirationDateTime = DateTime.UtcNow.AddMinutes(_authenticationConfiguration.RefreshTokenExpirationMinutes),
             };
 
+            // Добавление в БД
             await _refreshTokenRepository.Create
             (
-                refreshToken: refreshTokenDTO
+                refreshToken: refreshTokenModel
             );
 
+            // Возврат результата
             return new AuthenticatedUserResponse
             (
-                user: new UserResponse()
+                user: new UserDTO()
                 { 
                     Id = user.Id,
                     Username = user.Username,
@@ -76,7 +80,7 @@ namespace Chat.API.Services.Providers
         }
 
         /// <summary>
-        /// Получить пользователя из HttpContext'а контекста 
+        /// Получить пользователя из HttpContext'а 
         /// </summary>
         /// <param name="httpContextUser"></param>
         /// <returns></returns>
@@ -117,7 +121,10 @@ namespace Chat.API.Services.Providers
         /// <returns></returns>
         public async Task RegisterUser(RegisterRequest registerRequest)
         {
+            // Генерация хэша пароля
             string passwordHash = _passwordHasher.HashPassword(registerRequest.Password);
+
+            // Создание модели
             User user = new User()
             {
                 Username = registerRequest.Username,
@@ -125,6 +132,7 @@ namespace Chat.API.Services.Providers
                 Name = registerRequest.Name,
             };
 
+            // Добавление в БД
             await _userRepository.Create(user);
         }
 
