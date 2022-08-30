@@ -4,9 +4,7 @@ using Chat.API.Models.Requests;
 using Chat.API.Models.Responses;
 using Chat.API.Services.Providers;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Chat.API.Controllers
 {

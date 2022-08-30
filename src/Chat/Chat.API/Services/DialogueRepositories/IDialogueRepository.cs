@@ -15,6 +15,7 @@ namespace Chat.API.Services.DialogueRepositories
 
         Task<bool> Any(User user1, User user2);
 
+        Task Delete(Dialogue dialogue);
         Task<ICollection<Dialogue>> GetDialoguesWithLastMessages(User user);
     }
 }

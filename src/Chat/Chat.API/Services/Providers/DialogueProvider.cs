@@ -83,7 +83,7 @@ namespace Chat.API.Services.Providers
             var dialogueMember = await _userRepository.Get(dialogueMemberId);
 
             // Удаление диалога из БД
-            // _dialogueRepository.Delete(dialogueToDelete);
+            await _dialogueRepository.Delete(dialogueToDelete);
 
             if (dialogueMember != null)
             {
@@ -95,7 +95,7 @@ namespace Chat.API.Services.Providers
             }
 
             // Подгрузка существующих хаб-подключений пользователя
-            await _connectionRepository.LoadConnections(user);
+            // await _connectionRepository.LoadConnections(user);
 
             // Уведомление участника диалога о удалении
             // _messagingService.Delete(user, dialogueToDelete);
