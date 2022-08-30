@@ -7,6 +7,13 @@ namespace Chat.API.Services.ConnectionRepositories
     {
 
         Task<User> LoadConnections(User user);
+        
+        Task<HubConnection> Get(string connectionId);
+
+        Task Add(User user, HubConnection connection);
+
         Task<ICollection<HubConnection>> GetUserConnections(int userId);
+
+        Task SetConnectionStatus(HubConnection hubConnection, bool isActiveStatus);
     }
 }

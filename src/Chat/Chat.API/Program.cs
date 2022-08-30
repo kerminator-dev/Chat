@@ -52,6 +52,8 @@ app.MapControllers();
 app.MapHub<ChatHub>("/chathub", options =>
 {
     options.Transports = HttpTransportType.WebSockets;
+    options.TransportMaxBufferSize = 32;
+    options.ApplicationMaxBufferSize = 32;
 });
 
 app.Run();

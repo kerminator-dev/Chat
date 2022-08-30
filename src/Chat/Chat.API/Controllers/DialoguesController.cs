@@ -50,7 +50,7 @@ namespace Chat.API.Controllers
 
         [HttpPost("Create")]
         [Authorize]
-        public async Task<IActionResult> Create(CreateDialogueRequest createDialogueRequest)
+        public async Task<IActionResult> Create([FromBody] CreateDialogueRequest createDialogueRequest)
         {
             if (!ModelState.IsValid)
             {
@@ -88,7 +88,7 @@ namespace Chat.API.Controllers
 
         [HttpDelete("Delete")]
         [Authorize]
-        public async Task<IActionResult> Delete(DeleteDialogueRequest deleteDialogueRequest)
+        public async Task<IActionResult> Delete([FromBody] DeleteDialogueRequest deleteDialogueRequest)
         {
             if (!ModelState.IsValid)
             {

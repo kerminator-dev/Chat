@@ -11,8 +11,6 @@ using Chat.API.Services.UserRepositories;
 
 namespace Chat.API.Services.Providers
 {
-    // TODO - Обработка и возвращение ошибок
-
     public class DialogueProvider
     {
         private readonly IConnectionRepository _connectionRepository;
@@ -65,8 +63,12 @@ namespace Chat.API.Services.Providers
             // Создание диалога в БД
             await _dialogueRepository.Create(dialogue);
 
-            // Уведомление пользователей о создании диалога
+            // Подгрузка существующих хаб-подключений пользователя и уведомление участника диалога о создании диалога
+            // await _connectionRepository.LoadConnections(dialogueCreator);
             // await _messagingService.Create(dialogueCreator, dialogueMember, dialogue);
+
+            // Подгрузка существующих хаб-подключений пользователя и уведомление участника диалога о создании диалога
+            // await _connectionRepository.LoadConnections(dialogueMember);
         }
 
         public async Task Delete(User user, DeleteDialogueRequest deleteDialogueRequest)
@@ -87,17 +89,13 @@ namespace Chat.API.Services.Providers
 
             if (dialogueMember != null)
             {
-                // Подгрузка существующих хаб-подключений пользователя
-                await _connectionRepository.LoadConnections(dialogueMember);
-
-                // Уведомление участника диалога о удалении
+                // Подгрузка существующих хаб-подключений пользователя и уведомление участника диалога о удалении
+                // await _connectionRepository.LoadConnections(dialogueMember);
                 // _messagingService.Delete(dialogueMember, dialogueToDelete);
             }
 
-            // Подгрузка существующих хаб-подключений пользователя
+            // Подгрузка существующих хаб-подключений пользователя и уведомление участника диалога о удалении
             // await _connectionRepository.LoadConnections(user);
-
-            // Уведомление участника диалога о удалении
             // _messagingService.Delete(user, dialogueToDelete);
         }
 

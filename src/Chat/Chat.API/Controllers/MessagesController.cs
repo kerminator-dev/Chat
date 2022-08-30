@@ -7,7 +7,7 @@ using Chat.API.Exceptions;
 
 namespace Chat.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Dialogues/[controller]")]
     [ApiController]
     
     public class MessagesController : Controllers.ControllerBase
@@ -23,7 +23,7 @@ namespace Chat.API.Controllers
 
         [HttpPost("Send")]
         [Authorize]
-        public async Task<IActionResult> Send(SendMessageRequest message)
+        public async Task<IActionResult> SendMessages([FromBody] SendMessageRequest message)
         {
             if (!ModelState.IsValid)
             {
@@ -44,13 +44,14 @@ namespace Chat.API.Controllers
             {
                 return BadRequest(new ErrorResponse(ex.Message));
             }
+            catch (Exception) { }
 
             return Ok();
         }
 
         [HttpPost("Get")]
         [Authorize]
-        public async Task<IActionResult> GetMessages(GetMessagesRequest getMessagesRequest)
+        public async Task<IActionResult> GetMessages([FromBody] GetMessagesRequest getMessagesRequest)
         {
             if (!ModelState.IsValid)
             {
@@ -73,7 +74,65 @@ namespace Chat.API.Controllers
             {
                 return BadRequest(new ErrorResponse(ex.Message));
             }
-            
+            catch (Exception) { }
+
+            return Ok();
+        }
+
+        [HttpDelete("Delete")]
+        [Authorize]
+        public async Task<IActionResult> DeleteMessage([FromBody] DeleteMessageRequest deleteMessageRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequestModelState();
+            }
+
+            var user = await _authenticationProvider.GetHttpContextUser(HttpContext.User);
+            if (user == null)
+            {
+                return NotFound(new ErrorResponse("User not found!"));
+            }
+
+            try
+            {
+                await _messageProvider.DeleteMessage(user, deleteMessageRequest);
+            }
+            catch (ProcessingException ex)
+            {
+                return BadRequest(new ErrorResponse(ex.Message));
+            }
+            catch (Exception) { }
+
+            return Ok();
+        }
+
+        [HttpPatch("Update")]
+        [Authorize]
+        public async Task<IActionResult> UpdateMessage([FromBody] UpdateMessageRequest updateMessageRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequestModelState();
+            }
+
+            var user = await _authenticationProvider.GetHttpContextUser(HttpContext.User);
+            if (user == null)
+            {
+                return NotFound(new ErrorResponse("User not found!"));
+            }
+
+            try
+            {
+                await _messageProvider.UpdateMessage(user, updateMessageRequest);
+            }
+            catch (ProcessingException ex)
+            {
+                return BadRequest(new ErrorResponse(ex.Message));
+            }
+            catch (Exception) { }
+
+            return Ok();
         }
     }
 }
