@@ -32,6 +32,7 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
+            registerRequest.Username = registerRequest.Username.ToLower();
             User existingUserByUsername = await _authenticationProvider.GetUser(registerRequest.Username);
             if (existingUserByUsername != null)
             {
@@ -58,6 +59,7 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
+            loginRequest.Username = loginRequest.Username.ToLower();
             User user = await _authenticationProvider.GetUser(loginRequest.Username);
             if (user == null)
             {
