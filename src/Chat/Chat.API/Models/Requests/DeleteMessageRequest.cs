@@ -8,6 +8,7 @@ namespace Chat.API.Models.Requests
         public int DialogueId { get; set; }
 
         [Required(ErrorMessage = "Messages are required!")]
+        [MinLength(1)]
         public List<int> MessageIds { get; set; }
     }
 }

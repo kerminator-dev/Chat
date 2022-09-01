@@ -8,6 +8,8 @@ namespace Chat.API.Services.UserRepositories
         
         Task<User> Get(string username);
 
+        Task<ICollection<User>> Get(ICollection<int> userIds);
+
         Task<User> Create(User user);
 
         Task<ICollection<User>> Search(string username, int count = 8);

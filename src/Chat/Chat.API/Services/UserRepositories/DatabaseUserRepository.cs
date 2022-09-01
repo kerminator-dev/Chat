@@ -26,12 +26,21 @@ namespace Chat.API.Services.UserRepositories
 
         public async Task<User> Get(int userId)
         {
-            return await _dbContext.Users.FindAsync(userId);
+            return await _dbContext
+                    .Users
+                    .FindAsync(userId);
         }
 
         public async Task<User> Get(string username)
         {
-            return await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
+            return await _dbContext
+                    .Users
+                    .FirstOrDefaultAsync(u => u.Username == username);
+        }
+
+        public async Task<ICollection<User>> Get(ICollection<int> userIds)
+        {
+            return await _dbContext.Users.Where(u => userIds.Contains(u.Id)).ToListAsync();
         }
 
         /// <summary>

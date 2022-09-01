@@ -47,5 +47,30 @@ namespace Chat.API.Controllers
                 return BadRequest(new ErrorResponse(ex.Message));
             }
         }
+
+        [HttpPost("Get")]
+        [Authorize]
+        public async Task<IActionResult> GetUsers([FromBody] GetUsersRequest getUsersRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return base.BadRequestModelState();
+            }
+
+            var user = _authenticationProvider.GetHttpContextUser(HttpContext.User);
+            if (user == null)
+            {
+                return NotFound(new ErrorResponse("User not found!"));
+            }
+            try
+            {
+                var response = await _userProvider.Get(getUsersRequest);
+                return Ok(response);
+            }
+            catch (ProcessingException ex)
+            {
+                return BadRequest(new ErrorResponse(ex.Message));
+            }
+        }
     }
 }
