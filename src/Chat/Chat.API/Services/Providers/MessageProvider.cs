@@ -72,8 +72,8 @@ namespace Chat.API.Services.Providers
                 throw new ProcessingException("Dialogue not found!");
 
             // Получение списка сообщений диалога
-            var messages = await _messageRepository.GetMessages(dialogue, getMessagesRequest.Count, getMessagesRequest.Offset);
-            if (messages == null || messages.Count == 0)
+            var messages = await _messageRepository.Get(dialogue, getMessagesRequest.Count, getMessagesRequest.Offset);
+            if (messages == null || !messages.Any())
                 throw new ProcessingException("No messages!");
 
             // Возврат результата выполнения
@@ -84,10 +84,10 @@ namespace Chat.API.Services.Providers
             };
         }
 
-        public async Task DeleteMessage(User sender, DeleteMessageRequest deleteMessageRequest)
+        public async Task DeleteMessage(User sender, DeleteMessagesRequest deleteMessagesRequest)
         {
             // Получение диалога
-            var dialogue = await _dialogueRepository.Get(sender, deleteMessageRequest.DialogueId);
+            var dialogue = await _dialogueRepository.Get(sender, deleteMessagesRequest.DialogueId);
             if (dialogue == null)
                 throw new ProcessingException("Dialogue not found!");
 
@@ -96,20 +96,20 @@ namespace Chat.API.Services.Providers
             if (receiver == null)
                 throw new ProcessingException("Receiver not found!");
 
-            // Получение сообщения из БД, которое нужно удалить
-            var messageToDelete = await _messageRepository.Get(dialogue.Id, deleteMessageRequest.MessageId);
-            if (messageToDelete == null)
+            // Получение сообщений из БД, которые нужно удалить
+            var messagesToDelete = await _messageRepository.Get(dialogue.Id, deleteMessagesRequest.MessageIds);
+            if (messagesToDelete == null || !messagesToDelete.Any())
                 throw new ProcessingException("Message not found!");
 
             // Удаление сообщения из БД
-            await _messageRepository.Delete(messageToDelete);
+            await _messageRepository.Delete(messagesToDelete);
 
             // Иницализация модели для оповещения
-            var deletedMessage = new DeletedMessageDTO()
+            var deletedMessage = new DeletedMessagesDTO()
             {
-                DialogueId = deleteMessageRequest.DialogueId,
+                DialogueId = deleteMessagesRequest.DialogueId,
                 InitiatorId = sender.Id,
-                MessageId = deleteMessageRequest.MessageId
+                MessageIds = deleteMessagesRequest.MessageIds
             };
 
             // Подгрузка подключений пользователя и отправка уведомления о удалении первому участнику диалога

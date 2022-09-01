@@ -1,6 +1,6 @@
 ﻿namespace Chat.API.DTOs
 {
-    public class DeletedMessageDTO
+    public class DeletedMessagesDTO
     {
         /// <summary>
         /// ID диалога
@@ -10,7 +10,7 @@
         /// <summary>
         /// ID удалённого сообщения
         /// </summary>
-        public int MessageId { get; set; }
+        public List<int> MessageIds { get; set; }
 
         /// <summary>
         /// ID пользователя, удалившего сообщение

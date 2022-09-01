@@ -9,7 +9,7 @@ namespace Chat.API.Services.DialogueRepositories
 
         Task<Dialogue> Get(User user, int id);
 
-        Task Create(Dialogue dialogue);
+        Task<Dialogue> Create(Dialogue dialogue);
 
         Task AddMessage(Dialogue dialogue, DialogueMessage message);
 

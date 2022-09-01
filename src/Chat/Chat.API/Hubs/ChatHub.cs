@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 namespace Chat.API.Hubs
 {
     /// <summary>
-    /// Хаб, расчитанный на рассылку сообщений пользователям
+    /// Хаб для рассылки сообщений пользователям
     /// </summary>
     public class ChatHub : Hub
     {
@@ -39,7 +39,7 @@ namespace Chat.API.Hubs
             string userAgent = Context.GetHttpContext()?
                                 .Request
                                 .Headers["User-Agent"]
-                                .FirstOrDefault(string.Empty) ?? "unknown user-agent";
+                                .FirstOrDefault() ?? "unknown user-agent";
 
             // Иницилизация модели подключения
             var connection = new HubConnection()

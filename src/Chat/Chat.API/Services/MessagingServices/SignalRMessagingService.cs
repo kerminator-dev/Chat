@@ -31,9 +31,9 @@ namespace Chat.API.Services.MessagingServices
         /// <param name="receiver">Получатель</param>
         /// <param name="deletedMessage">Удалённое сообщение</param>
         /// <returns></returns>
-        public async Task SendDeletedMessage(User receiver, DeletedMessageDTO deletedMessage)
+        public async Task SendDeletedMessage(User receiver, DeletedMessagesDTO deletedMessage)
         {
-            await this.Send<DeletedMessageDTO>(receiver, "DeleteMessage", deletedMessage);
+            await this.Send<DeletedMessagesDTO>(receiver, "DeleteMessage", deletedMessage);
         }
 
         /// <summary>
@@ -47,6 +47,27 @@ namespace Chat.API.Services.MessagingServices
             await this.Send<UpdatedMessageDTO>(receiver, "UpdateMessage", updatedMessage);
         }
 
+        /// <summary>
+        /// Уведомление пользователя о создании диалога
+        /// </summary>
+        /// <param name="receiver">Получатель</param>
+        /// <param name="newDialogue">Новый диалог</param>
+        /// <returns></returns>
+        public async Task SendCreatedDialogue(User receiver, CreatedDialogueDTO newDialogue)
+        {
+            await this.Send<CreatedDialogueDTO>(receiver, "CreateDialogue", newDialogue);
+        }
+
+        /// <summary>
+        /// Уведомления пользователя о удалении диалога
+        /// </summary>
+        /// <param name="receiver">Получатель</param>
+        /// <param name="deletedDialogue">Удалённый диалог</param>
+        /// <returns></returns>
+        public async Task SendDeletedDialogue(User receiver, DeletedDialogueDTO deletedDialogue)
+        {
+            await this.Send<DeletedDialogueDTO>(receiver, "DeleteDialogue", deletedDialogue);
+        }
 
 
         /// <summary>
@@ -57,7 +78,7 @@ namespace Chat.API.Services.MessagingServices
         /// <param name="methodName">Название метода-события на стороне получателя</param>
         /// <param name="objectToSend">Отправляемый объект</param>
         /// <returns></returns>
-        protected async Task Send<T>(User receiver, string methodName, T objectToSend) where T : class
+        protected async Task Send<T>(User receiver, string methodName, T objectToSend)
         {
             if (receiver.Connections is null)
                 return;

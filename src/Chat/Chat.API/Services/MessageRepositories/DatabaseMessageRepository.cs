@@ -27,12 +27,26 @@ namespace Chat.API.Services.MessageRepositories
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task Delete(ICollection<DialogueMessage> messageIds)
+        {
+            _dbContext.Messages.RemoveRange(messageIds);
+
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<ICollection<DialogueMessage>> Get(int dialogueId, ICollection<int> messageIds)
+        {
+            return await _dbContext.Messages
+                        .Where(m => m.DialogueId == dialogueId && messageIds.Contains(m.Id))
+                        .ToListAsync();
+        }
+
         public async Task<DialogueMessage> Get(int dialogueId, int messageId)
         {
             return await _dbContext.Messages.FirstOrDefaultAsync(m => m.Id == messageId && m.DialogueId == dialogueId);
         }
 
-        public async Task<ICollection<DialogueMessage>> GetMessages(Dialogue dialogue, int count, int offset = 0)
+        public async Task<ICollection<DialogueMessage>> Get(Dialogue dialogue, int count, int offset = 0)
         {
             return await _dbContext.Messages.Where(m => m.DialogueId == dialogue.Id).OrderByDescending(m => m.Id).Skip(offset).Take(count).ToListAsync();
            // return await _dbContext.Messages.Where(m => m.DialogueId == dialogue.Id).TakeLast(count).ToListAsync();

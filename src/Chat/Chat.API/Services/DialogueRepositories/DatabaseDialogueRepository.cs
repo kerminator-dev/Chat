@@ -14,10 +14,13 @@ namespace Chat.API.Services.DialogueRepositories
             _dbContext = dbContext;
         }
 
-        public async Task Create(Dialogue dialogue)
+        public async Task<Dialogue> Create(Dialogue dialogue)
         {
-            _dbContext.Dialogues.Add(dialogue);
+            var result = await _dbContext.Dialogues.AddAsync(dialogue);
+
             await _dbContext.SaveChangesAsync();
+
+            return result.Entity;
         }
 
         public async Task<ICollection<Dialogue>> GetAll(User user)

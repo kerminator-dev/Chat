@@ -81,7 +81,7 @@ namespace Chat.API.Controllers
 
         [HttpDelete("Delete")]
         [Authorize]
-        public async Task<IActionResult> DeleteMessage([FromBody] DeleteMessageRequest deleteMessageRequest)
+        public async Task<IActionResult> DeleteMessages([FromBody] DeleteMessagesRequest deleteMessageRequest)
         {
             if (!ModelState.IsValid)
             {

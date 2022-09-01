@@ -8,9 +8,13 @@ namespace Chat.API.Services.MessageRepositories
 
         Task Delete(DialogueMessage message);
 
+        Task Delete(ICollection<DialogueMessage> messageIds);
+
         Task<DialogueMessage> Get(int dialogueId, int messageId);
 
-        Task<ICollection<DialogueMessage>> GetMessages(Dialogue dialogue, int count, int offset);
+        Task<ICollection<DialogueMessage>> Get(int dialogueId, ICollection<int> MessageIDs);
+
+        Task<ICollection<DialogueMessage>> Get(Dialogue dialogue, int count, int offset);
 
         Task Update(DialogueMessage message);
     }

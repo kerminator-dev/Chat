@@ -33,5 +33,19 @@ namespace Chat.API.Services.UserRepositories
         {
             return await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
         }
+
+        /// <summary>
+        /// Найти пользователей по никнейму username
+        /// </summary>
+        /// <param name="username">Никнейм (чувствительный к регистру)</param>
+        /// <returns>Список найденных пользователей</returns>
+        public async Task<ICollection<User>> Search(string username, int count = 10)
+        {
+            return await _dbContext
+                        .Users
+                        .Where(u => u.Username.Contains(username))
+                        .Take(count)
+                        .ToListAsync();
+        }
     }
 }

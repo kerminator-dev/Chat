@@ -52,7 +52,7 @@ namespace Chat.API.Services.Providers
             if (await _dialogueRepository.Any(dialogueMember, dialogueCreator))
                 throw new ProcessingException("Dialog already exist!");
 
-            // Создание модели диалога
+            // Создание модели диалога для БД
             var dialogue = new Dialogue()
             {
                 Created = DateTime.UtcNow,
@@ -60,15 +60,27 @@ namespace Chat.API.Services.Providers
                 MemberId = dialogueMember.Id,
             };
 
-            // Создание диалога в БД
-            await _dialogueRepository.Create(dialogue);
+
+            // Добавление диалога в БД
+            var createdDialogue = await _dialogueRepository.Create(dialogue);
+
+            // Создание модели для оповещения участников
+            var createdDialogueDTO = new CreatedDialogueDTO()
+            {
+                Id = createdDialogue.Id,
+                Created = createdDialogue.Created,
+                CreatorId = createdDialogue.CreatorId,
+                MemberId = createdDialogue.MemberId
+            };
+
 
             // Подгрузка существующих хаб-подключений пользователя и уведомление участника диалога о создании диалога
-            // await _connectionRepository.LoadConnections(dialogueCreator);
-            // await _messagingService.Create(dialogueCreator, dialogueMember, dialogue);
+            await _connectionRepository.LoadConnections(dialogueCreator);
+            await _messagingService.SendCreatedDialogue(dialogueCreator, createdDialogueDTO);
 
             // Подгрузка существующих хаб-подключений пользователя и уведомление участника диалога о создании диалога
-            // await _connectionRepository.LoadConnections(dialogueMember);
+            await _connectionRepository.LoadConnections(dialogueMember);
+            await _messagingService.SendCreatedDialogue(dialogueMember, createdDialogueDTO);
         }
 
         public async Task Delete(User user, DeleteDialogueRequest deleteDialogueRequest)
@@ -84,19 +96,26 @@ namespace Chat.API.Services.Providers
             // Получение второго участника диалога по id
             var dialogueMember = await _userRepository.Get(dialogueMemberId);
 
+            // Модель для оповещения участников
+            var deletedDialogue = new DeletedDialogueDTO()
+            {
+                Id = deleteDialogueRequest.DialogueId,
+                InitiatorId = user.Id
+            };
+
             // Удаление диалога из БД
             await _dialogueRepository.Delete(dialogueToDelete);
 
             if (dialogueMember != null)
             {
                 // Подгрузка существующих хаб-подключений пользователя и уведомление участника диалога о удалении
-                // await _connectionRepository.LoadConnections(dialogueMember);
-                // _messagingService.Delete(dialogueMember, dialogueToDelete);
+                 await _connectionRepository.LoadConnections(dialogueMember);
+                 await _messagingService.SendDeletedDialogue(dialogueMember, deletedDialogue);
             }
 
             // Подгрузка существующих хаб-подключений пользователя и уведомление участника диалога о удалении
-            // await _connectionRepository.LoadConnections(user);
-            // _messagingService.Delete(user, dialogueToDelete);
+             await _connectionRepository.LoadConnections(user);
+             await _messagingService.SendDeletedDialogue(user, deletedDialogue);
         }
 
         private static ICollection<DialogueWithLastMessageDTO> ToDialogMessageDTOs(ICollection<Dialogue> dialogues)

@@ -35,6 +35,7 @@ builder.Services.AddScoped<IMessagingService, SignalRMessagingService>();
 builder.Services.AddScoped<MessageProvider>();
 builder.Services.AddScoped<DialogueProvider>();
 builder.Services.AddScoped<IDialogueRepository, DatabaseDialogueRepository>();
+builder.Services.AddScoped<UserProvider>();
 
 
 var app = builder.Build();
