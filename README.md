@@ -20,7 +20,7 @@ Messages:
 - ✅ Get user's message list 
 
 Users:
-- ✅Find user's by username
+- ✅ Find user's by username
 - ✅ Get user's info by user id
 - ❌ Add user to black list
 - ❌ Delete user from black list
@@ -39,6 +39,7 @@ Tiny notifications:
 ## Client side:
 - ❌ MVVM .NET MAUI Android app
 - ❌ MVVM .NET MAUI Windows app (optional)
+- 🚩 <a href="https://github.com/ertanfird/simplify">Single page React web app</a> by <a href="https://github.com/ertanfird">Ertanfird</a>
 
 ## Refactoring:
 - ❌ Review database
