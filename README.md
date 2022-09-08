@@ -1,6 +1,53 @@
 # Chat
  Full stack chat application
 
+# To do: back-end and client apps:
+## Back-end methods:
+Authentication:
+- ✅ Registration
+- ✅ Login
+- ✅ Refresh token
+
+Dialogues:
+- ✅ Create dialogue, real-time SignalR notficiation 
+- ✅ Delete dialogue, real-time SignalR notficiation 
+- ✅ Get user dialogues list
+
+Messages:
+- ✅ Send message to dialogue, real-time SignalR notficiation 
+- ✅ Delete messages in dialogue, real-time SignalR notficiation 
+- ✅ Update message in dialogue, real-time SignalR notficiation 
+- ✅ Get user's message list 
+
+Users:
+- ✅Find user's by username
+- ✅ Get user's info by user id
+- ❌ Add user to black list
+- ❌ Delete user from black list
+
+Profile:
+- ❌ Update avatar (256x256 - big size, also sever side has small size 32x32 and blur hash string)
+- ❌ Update name
+- ✅ Update password
+
+
+Tiny notifications:
+- ❌ User gets online/offline
+- ❌ User typing message in dialogue
+
+
+## Client side:
+- ❌ MVVM .NET MAUI Android app
+- ❌ MVVM .NET MAUI Windows app (optional)
+
+## Refactoring:
+- ❌ Reviewe database
+- ❌ Review code semantics
+- ❌ Review exception handling
+- ❌ Comment logic
+- ❌ Try to remake projects with a <a href="Trying to remake it for Clean Acritecture">Clean Acritecture</a> template
+
+
 # API-methods:
 
 ### Authentication.Register
