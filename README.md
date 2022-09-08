@@ -41,7 +41,7 @@ Tiny notifications:
 - ❌ MVVM .NET MAUI Windows app (optional)
 
 ## Refactoring:
-- ❌ Reviewe database
+- ❌ Review database
 - ❌ Review code semantics
 - ❌ Review exception handling
 - ❌ Comment logic
