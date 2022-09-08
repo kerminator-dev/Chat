@@ -1,13 +1,13 @@
 # Review
- Full stack chat application.
- Main functionality:
+ ## Full stack chat application.
+ ### Main functionality:
  - Register/Login/Logout
  - Receive and send in real-time text messages from/to another users throw dialogues
  - Update profile image and profile data
  - Block/unblock users 
  - Have multiple devices with different client apps, connected to one account. 
  
-Current back-end stack:
+### Current back-end stack:
 - ASP .NET 6 Web Api
 - Json Web Tokens
 - Entity Framework
@@ -54,8 +54,8 @@ Current back-end stack:
 - ❌ Left conversation
 
 ## Client side:
-- ❌ MVVM .NET MAUI Android app
-- ❌ MVVM .NET MAUI Windows app (optional)
+- ❌ MVVM .NET MAUI Android client app
+- ❌ MVVM .NET MAUI Windows client app (optional)
 - 🚩 <a href="https://github.com/ertanfird/simplify">Single page React web app</a> by <a href="https://github.com/ertanfird">Ertanfird</a>
 
 ## Refactoring:
