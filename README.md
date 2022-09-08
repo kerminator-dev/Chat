@@ -1,5 +1,6 @@
-# Chat
- Full stack chat application
+# Review
+ Full stack chat application.
+ Main functionality is abilities to receive and send in real-time text messages to another users, update your own profile image, block/unblock users and have multiple devices, connected to account. 
 
 # To do: back-end and client apps:
 ## Back-end methods:
@@ -30,11 +31,14 @@ Profile:
 - ❌ Update name
 - ✅ Update password
 
-
 Tiny notifications:
 - ❌ User gets online/offline
 - ❌ User typing message in dialogue
 
+Conversations (Optional & not necessary):
+- ❌ Create conversation with multiple users
+- ❌ Join conversation
+- ❌ Left conversation
 
 ## Client side:
 - ❌ MVVM .NET MAUI Android app
