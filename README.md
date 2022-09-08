@@ -40,7 +40,7 @@
 - ❌ Delete user from black list
 
 ❌ Profile:
-- ❌ Update avatar (256x256 - big size, also server side converts big image to small size 32x32 and generates blur hash string)
+- ❌ Update avatar (256x256 - big size, also server side converts big image to small size 32x32 and generates <a href="https://github.com/MarkusPalcer/blurhash.net">blur hash</a> string)
 - ❌ Update name
 - ✅ Update password
 
