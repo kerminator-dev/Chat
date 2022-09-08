@@ -40,7 +40,7 @@
 - ❌ Delete user from black list
 
 ❌ Profile:
-- ❌ Update avatar (256x256 - big size, also sever side has small size 32x32 and blur hash string)
+- ❌ Update avatar (256x256 - big size, also server side converts big image to small size 32x32 and generates blur hash string)
 - ❌ Update name
 - ✅ Update password
 
