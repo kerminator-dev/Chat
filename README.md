@@ -1,8 +1,9 @@
 # Review
  Full stack chat application.
  Main functionality:
+ - Register/Login/Logout
  - Receive and send in real-time text messages from/to another users throw dialogues
- - Update your own profile image and profile data
+ - Update profile image and profile data
  - Block/unblock users 
  - Have multiple devices with different client apps, connected to one account. 
 
