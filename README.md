@@ -1,6 +1,10 @@
 # Review
  Full stack chat application.
- Main functionality is abilities to receive and send in real-time text messages to another users, update your own profile image, block/unblock users and have multiple devices, connected to account. 
+ Main functionality:
+ - Receive and send in real-time text messages from/to another users throw dialogues
+ - Update your own profile image and profile data
+ - Block/unblock users 
+ - Have multiple devices with different client apps, connected to one account. 
 
 # To do: back-end and client apps:
 ## Back-end methods:
