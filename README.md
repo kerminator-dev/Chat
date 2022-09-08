@@ -6,6 +6,14 @@
  - Update profile image and profile data
  - Block/unblock users 
  - Have multiple devices with different client apps, connected to one account. 
+ 
+Current back-end stack:
+- ASP .NET 6 Web Api
+- Json Web Tokens
+- Entity Framework
+- SQLite
+- SignalR
+- BCrypt
 
 # To do: back-end and client apps:
 ## Back-end methods:
