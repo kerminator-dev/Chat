@@ -8,38 +8,38 @@
 
 # To do: back-end and client apps:
 ## Back-end methods:
-Authentication:
+✅ Authentication:
 - ✅ Registration
 - ✅ Login
 - ✅ Refresh token
 
-Dialogues:
+✅ Dialogues:
 - ✅ Create dialogue, real-time SignalR notficiation 
 - ✅ Delete dialogue, real-time SignalR notficiation 
 - ✅ Get user dialogues list
 
-Messages:
+✅ Messages:
 - ✅ Send message to dialogue, real-time SignalR notficiation 
 - ✅ Delete messages in dialogue, real-time SignalR notficiation 
 - ✅ Update message in dialogue, real-time SignalR notficiation 
 - ✅ Get user's message list 
 
-Users:
+❌ Users:
 - ✅ Find user's by username
 - ✅ Get user's info by user id
 - ❌ Add user to black list
 - ❌ Delete user from black list
 
-Profile:
+❌ Profile:
 - ❌ Update avatar (256x256 - big size, also sever side has small size 32x32 and blur hash string)
 - ❌ Update name
 - ✅ Update password
 
-Tiny notifications:
+❌ Tiny notifications:
 - ❌ User gets online/offline
 - ❌ User typing message in dialogue
 
-Conversations (Optional & not necessary):
+❌ Conversations (Optional & not necessary):
 - ❌ Create conversation with multiple users
 - ❌ Join conversation
 - ❌ Left conversation
@@ -55,6 +55,8 @@ Conversations (Optional & not necessary):
 - ❌ Review exception handling
 - ❌ Comment logic
 - ❌ Try to remake projects with a <a href="Trying to remake it for Clean Acritecture">Clean Acritecture</a> template
+
+## Testing
 
 
 # API-methods:
