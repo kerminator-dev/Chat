@@ -6,8 +6,7 @@ This project was made to improve knowlegde of building a .NET WEB applications w
  ### Main functionality:
  - Register/Login/Logout
  - Receive and send in real-time text messages from/to another users throw dialogues
- - Update profile image and profile data
- - Block/unblock users 
+ - Update profile name, color, password
  - Have multiple devices with different client apps, connected to one account. 
  
 ### Current back-end stack:
