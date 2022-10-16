@@ -1,5 +1,72 @@
-# Chat
- Full stack chat application
+# Review
+ ## Full stack chat application.
+ ### Main functionality:
+ - Register/Login/Logout
+ - Receive and send in real-time text messages from/to another users throw dialogues
+ - Update profile image and profile data
+ - Block/unblock users 
+ - Have multiple devices with different client apps, connected to one account. 
+ 
+### Current back-end stack:
+- ASP .NET 6 Web Api
+- Json Web Tokens
+- Entity Framework
+- SQLite
+- SignalR
+- BCrypt
+
+# To do: back-end and client apps:
+## Back-end methods:
+✅ Authentication:
+- ✅ Registration
+- ✅ Login
+- ✅ Refresh token
+
+✅ Dialogues:
+- ✅ Create dialogue, real-time SignalR notficiation 
+- ✅ Delete dialogue, real-time SignalR notficiation 
+- ✅ Get user dialogues list
+
+✅ Messages:
+- ✅ Send message to dialogue, real-time SignalR notficiation 
+- ✅ Delete messages in dialogue, real-time SignalR notficiation 
+- ✅ Update message in dialogue, real-time SignalR notficiation 
+- ✅ Get user's message list 
+
+❌ Users:
+- ✅ Find user's by username
+- ✅ Get user's info by user id
+- ❌ Add user to black list
+- ❌ Delete user from black list
+
+❌ Profile:
+- ❌ Update avatar (256x256 - big size, also server side converts big image to small size 32x32 and generates <a href="https://github.com/MarkusPalcer/blurhash.net">blur hash</a> string)
+- ❌ Update name
+- ✅ Update password
+
+❌ Tiny notifications:
+- ❌ User gets online/offline
+- ❌ User typing message in dialogue
+
+❌ Conversations (Optional & not necessary):
+- ❌ Create conversation with multiple users
+- ❌ Join conversation
+- ❌ Left conversation
+
+## Client side:
+- ❌ MVVM .NET MAUI Android client app
+- ❌ MVVM .NET MAUI Windows client app (optional)
+- 🚩 <a href="https://github.com/ertanfird/simplify">Single page React web app</a> by <a href="https://github.com/ertanfird">Ertanfird</a>
+
+## Refactoring:
+- ❌ Review database
+- ❌ Review code semantics
+- ❌ Review exception handling
+- ❌ Comment logic
+- ❌ Try to remake projects with a <a href="Trying to remake it for Clean Acritecture">Clean Acritecture</a> template
+
+## Testing
+
 
 # API-methods:
 
