@@ -1,5 +1,8 @@
 # Review
  ## Full stack chat application.
+ 
+This project was made to improve knowlegde of building a .NET WEB applications with WEB Api and also can have many flaws. I would be appreciate for a new suggestions to improve the code. 
+ 
  ### Main functionality:
  - Register/Login/Logout
  - Receive and send in real-time text messages from/to another users throw dialogues
@@ -15,7 +18,7 @@
 - SignalR
 - BCrypt
 
-# To do: back-end and client apps:
+# 🚩 To do: back-end and client apps:
 ## Back-end methods:
 ✅ Authentication:
 - ✅ Registration
@@ -51,7 +54,7 @@
 - 🚩 <a href="https://github.com/ertanfird/simplify">Single page React web app</a> by <a href="https://github.com/ertanfird">Ertanfird</a>
 
 ## Refactoring:
-- ❌ Review database
+- ❌ Review database models
 - ❌ Review code semantics
 - ❌ Review exception handling
 - ❌ Comment logic
