@@ -33,29 +33,21 @@
 - ✅ Update message in dialogue, real-time SignalR notficiation 
 - ✅ Get user's message list 
 
-❌ Users:
+✅ Users:
 - ✅ Find user's by username
 - ✅ Get user's info by user id
-- ❌ Add user to black list
-- ❌ Delete user from black list
 
 ❌ Profile:
-- ❌ Update avatar (256x256 - big size, also server side converts big image to small size 32x32 and generates <a href="https://github.com/MarkusPalcer/blurhash.net">blur hash</a> string)
+- ❌ Update user color
 - ❌ Update name
 - ✅ Update password
 
-❌ Tiny notifications:
-- ❌ User gets online/offline
-- ❌ User typing message in dialogue
-
-❌ Conversations (Optional & not necessary):
-- ❌ Create conversation with multiple users
-- ❌ Join conversation
-- ❌ Left conversation
+❓ Tiny notifications (optional and not necessary):
+- ❓ User gets online/offline
+- ❓ User typing message in dialogue
 
 ## Client side:
-- ❌ MVVM .NET MAUI Android client app
-- ❌ MVVM .NET MAUI Windows client app (optional)
+- ❌ MVVM .NET WPF client app
 - 🚩 <a href="https://github.com/ertanfird/simplify">Single page React web app</a> by <a href="https://github.com/ertanfird">Ertanfird</a>
 
 ## Refactoring:
