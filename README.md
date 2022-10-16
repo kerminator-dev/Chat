@@ -2,6 +2,8 @@
  ## Full stack chat application.
  
 This project was made to improve knowlegde of building a .NET WEB applications with WEB Api and also can have many flaws. I would be appreciate for a new suggestions to improve the code. 
+
+The basic and general principle is simple text messaging to another users with ability to encrypt messages on client-sides. Any other additional functionality will be considered redundant.
  
  ### Main functionality:
  - Register/Login/Logout
@@ -16,6 +18,10 @@ This project was made to improve knowlegde of building a .NET WEB applications w
 - SQLite
 - SignalR
 - BCrypt
+
+### Current client-side stack:
+- MVVM
+- WPF
 
 # 🚩 To do: back-end and client apps:
 ## Back-end methods:
