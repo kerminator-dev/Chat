@@ -12,6 +12,8 @@ namespace Chat.API.Services.UserRepositories
 
         Task<User> Create(User user);
 
+        Task<User> Update(User user);
+
         Task<ICollection<User>> Search(string username, int count = 8);
     }
 }

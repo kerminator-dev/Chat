@@ -16,10 +16,10 @@ namespace Chat.API.Services.ConnectionRepositories
         public async Task Add(User user, HubConnection connection)
         {
             // Подгрузка подключений пользователя из БД, если их нет
-            if (user.Connections == null)
+            if (user.HubConnections == null)
                 await this.LoadConnections(user);
 
-            user.Connections?.Add(connection);
+            user.HubConnections?.Add(connection);
 
             await _dbContext.SaveChangesAsync();
         }
@@ -39,7 +39,7 @@ namespace Chat.API.Services.ConnectionRepositories
             if (user == null)
                 return user;
 
-            await _dbContext.Entry(user).Collection(u => u.Connections).LoadAsync();
+            await _dbContext.Entry(user).Collection(u => u.HubConnections).LoadAsync();
 
             return user;
         }

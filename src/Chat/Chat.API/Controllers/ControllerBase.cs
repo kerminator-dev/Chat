@@ -11,6 +11,7 @@ namespace Chat.API.Controllers
         /// <returns></returns>
         protected IActionResult BadRequestModelState()
         {
+            // Получение списка ошибок модели
             IEnumerable<string> errorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
 
             return BadRequest(new ErrorResponse(errorMessages));

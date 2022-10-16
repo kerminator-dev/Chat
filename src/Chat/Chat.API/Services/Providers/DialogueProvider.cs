@@ -26,7 +26,7 @@ namespace Chat.API.Services.Providers
             _connectionRepository = connectionRepository;
         }
 
-        public async Task<DialoguesResponse> GetAll(User user)
+        public async Task<GetDialoguesResponse> GetAll(User user)
         {           
            // Получение списка диалогов пользователя с последними сообщениями
             var dialoguesWithLastMessages = await _dialogueRepository.GetDialoguesWithLastMessages(user);
@@ -37,7 +37,7 @@ namespace Chat.API.Services.Providers
             var dialogueDTOs = ToDialogMessageDTOs(dialoguesWithLastMessages);
 
             // Создание DialoguesResponse
-            var dialoguesResponse = new DialoguesResponse()
+            var dialoguesResponse = new GetDialoguesResponse()
             {
                 UserId = user.Id,
                 Dialogues = dialogueDTOs
@@ -60,7 +60,6 @@ namespace Chat.API.Services.Providers
                 MemberId = dialogueMember.Id,
             };
 
-
             // Добавление диалога в БД
             var createdDialogue = await _dialogueRepository.Create(dialogue);
 
@@ -72,7 +71,6 @@ namespace Chat.API.Services.Providers
                 CreatorId = createdDialogue.CreatorId,
                 MemberId = createdDialogue.MemberId
             };
-
 
             // Подгрузка существующих хаб-подключений пользователя и уведомление участника диалога о создании диалога
             await _connectionRepository.LoadConnections(dialogueCreator);
@@ -150,7 +148,7 @@ namespace Chat.API.Services.Providers
 
             return new DialogueMessageDTO()
             {
-                Id = dialogueMessage.Id,
+                MessageId = dialogueMessage.Id,
                 SenderId = dialogueMessage.SenderId,
                 Content = dialogueMessage.Content,
                 Created = dialogueMessage.CreatedDate

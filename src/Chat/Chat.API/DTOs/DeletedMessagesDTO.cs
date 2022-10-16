@@ -1,5 +1,10 @@
 ﻿namespace Chat.API.DTOs
 {
+    /// <summary>
+    /// Удалённые сообщения
+    /// Нужен для оповещения участников диалога о том, 
+    /// что были удалены сообщения
+    /// </summary>
     public class DeletedMessagesDTO
     {
         /// <summary>

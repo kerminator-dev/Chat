@@ -9,7 +9,6 @@ namespace Chat.API.DbContexts
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<HubConnection> Connections { get; set; }
         public DbSet<DialogueMessage> Messages { get; set; }
-        public DbSet<Conversation> Conversations { get; set; }
         public DbSet<Dialogue> Dialogues { get; set; }
 
         public ApplicationDbContext(DbContextOptions options) : base(options)
@@ -66,15 +65,6 @@ namespace Chat.API.DbContexts
             // Message
             modelBuilder.Entity<DialogueMessage>()
                 .HasIndex(m => m.Id);
-
-            // Conversation
-            modelBuilder.Entity<Conversation>()
-                .HasIndex(c => c.Id)
-                .IsUnique();
-
-            modelBuilder.Entity<Conversation>()
-                .Property(c => c.Id)
-                .ValueGeneratedOnAdd();
 
             // Dialogues
             modelBuilder.Entity<Dialogue>()

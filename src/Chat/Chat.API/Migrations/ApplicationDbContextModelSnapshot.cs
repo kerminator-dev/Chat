@@ -17,27 +17,6 @@ namespace Chat.API.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.8");
 
-            modelBuilder.Entity("Chat.API.Entities.Conversation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
-
-                    b.ToTable("Conversations");
-                });
-
             modelBuilder.Entity("Chat.API.Entities.Dialogue", b =>
                 {
                     b.Property<int>("Id")
@@ -169,21 +148,6 @@ namespace Chat.API.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ConversationUser", b =>
-                {
-                    b.Property<int>("ConversationsId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("MembersId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("ConversationsId", "MembersId");
-
-                    b.HasIndex("MembersId");
-
-                    b.ToTable("ConversationUser");
-                });
-
             modelBuilder.Entity("Chat.API.Entities.DialogueMessage", b =>
                 {
                     b.HasOne("Chat.API.Entities.Dialogue", null)
@@ -196,23 +160,8 @@ namespace Chat.API.Migrations
             modelBuilder.Entity("Chat.API.Entities.HubConnection", b =>
                 {
                     b.HasOne("Chat.API.Entities.User", null)
-                        .WithMany("Connections")
+                        .WithMany("HubConnections")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ConversationUser", b =>
-                {
-                    b.HasOne("Chat.API.Entities.Conversation", null)
-                        .WithMany()
-                        .HasForeignKey("ConversationsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Chat.API.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("MembersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -224,7 +173,7 @@ namespace Chat.API.Migrations
 
             modelBuilder.Entity("Chat.API.Entities.User", b =>
                 {
-                    b.Navigation("Connections");
+                    b.Navigation("HubConnections");
                 });
 #pragma warning restore 612, 618
         }

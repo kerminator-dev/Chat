@@ -21,6 +21,11 @@ namespace Chat.API.Controllers
             _userProvider = userProvider;
         }
 
+        /// <summary>
+        /// Найти пользователя
+        /// </summary>
+        /// <param name="searchUserRequest">Запрос на поиск пользователей</param>
+        /// <returns></returns>
         [HttpPost("Search")]
         [Authorize]
         public async Task<IActionResult> SearchUser([FromBody] SearchUserRequest searchUserRequest)
@@ -30,15 +35,18 @@ namespace Chat.API.Controllers
                 return base.BadRequestModelState();
             }
 
+            // Определение пользователя из контекста
             var user = _authenticationProvider.GetHttpContextUser(HttpContext.User);
             if (user == null)
             {
+                // Если не найден
                 return NotFound(new ErrorResponse("User not found!"));
             }
 
             try
             {
-                var response = await _userProvider.Search(searchUserRequest);
+                // Поиск пользователей
+                var response = await _userProvider.SearchUsers(searchUserRequest);
 
                 return Ok(response);
             }
@@ -48,6 +56,11 @@ namespace Chat.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Получить список пользователей по ID
+        /// </summary>
+        /// <param name="getUsersRequest">Запрос на получение списка пользователей</param>
+        /// <returns></returns>
         [HttpPost("Get")]
         [Authorize]
         public async Task<IActionResult> GetUsers([FromBody] GetUsersRequest getUsersRequest)
@@ -57,14 +70,19 @@ namespace Chat.API.Controllers
                 return base.BadRequestModelState();
             }
 
+            // Определение пользователя из контекста
             var user = _authenticationProvider.GetHttpContextUser(HttpContext.User);
             if (user == null)
             {
+                // Если не найден
                 return NotFound(new ErrorResponse("User not found!"));
             }
+
             try
             {
-                var response = await _userProvider.Get(getUsersRequest);
+                // Получение пользователей
+                var response = await _userProvider.GetUsers(getUsersRequest);
+
                 return Ok(response);
             }
             catch (ProcessingException ex)

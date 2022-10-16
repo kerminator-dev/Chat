@@ -1,5 +1,9 @@
 ﻿namespace Chat.API.DTOs
 {
+    /// <summary>
+    /// Созданный диалог
+    /// Нужен для оповещения пользователей о создании диалога
+    /// </summary>
     public class CreatedDialogueDTO
     {
         /// <summary>

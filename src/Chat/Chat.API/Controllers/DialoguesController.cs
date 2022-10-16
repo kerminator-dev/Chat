@@ -21,6 +21,10 @@ namespace Chat.API.Controllers
             _dialogueProvider = dialogueProvider;
         }
 
+        /// <summary>
+        /// Получить список всех диалогов для пользователя из контекста
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("All")]
         [Authorize]
         public async Task<IActionResult> GetAll()
@@ -30,14 +34,17 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
+            // Определение пользователя
             User user = await _authenticationProvider.GetHttpContextUser(HttpContext.User);
             if (user == null)
             {
+                // Если такого пользователя нет
                 return NotFound(new ErrorResponse("User not found"));
             }
 
             try
             {
+                // Получение списка диалогов пользователя
                 var userDialoguesResponce = await _dialogueProvider.GetAll(user);
 
                 return Ok(userDialoguesResponce);
@@ -48,6 +55,11 @@ namespace Chat.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Создать диалог
+        /// </summary>
+        /// <param name="createDialogueRequest">Запрос на создание диалога</param>
+        /// <returns></returns>
         [HttpPost("Create")]
         [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateDialogueRequest createDialogueRequest)
@@ -57,18 +69,23 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
+            // Определение пользователя (инициатора диалога)
             var requester = await _authenticationProvider.GetHttpContextUser(HttpContext.User);
             if (requester == null)
             {
+                // Если такого пользователя нет
                 return NotFound(new ErrorResponse("User not found"));
             }
 
+            // Поиск второго участника диалога
             var targetUser = await _authenticationProvider.GetUser(createDialogueRequest.TargetUserId);
             if (targetUser == null)
             {
+                // Если такого пользователя нет
                 return NotFound(new ErrorResponse("User not found"));
             }
 
+            // Если пользователь пытается создать диалог сам с собой
             if (requester.Id == targetUser.Id)
             {
                 return BadRequest(new ErrorResponse("Cannot create dialog with yourself! (may be later)"));
@@ -76,6 +93,7 @@ namespace Chat.API.Controllers
 
             try
             {
+                // Создание диалога
                 await _dialogueProvider.Create(requester, targetUser);
 
                 return Ok();
@@ -86,6 +104,11 @@ namespace Chat.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Удалить диалог
+        /// </summary>
+        /// <param name="deleteDialogueRequest">Запрос на удаление диалога</param>
+        /// <returns></returns>
         [HttpDelete("Delete")]
         [Authorize]
         public async Task<IActionResult> Delete([FromBody] DeleteDialogueRequest deleteDialogueRequest)
@@ -95,14 +118,17 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
+            // Определение пользователя
             var requester = await _authenticationProvider.GetHttpContextUser(HttpContext.User);
             if (requester == null)
             {
+                // Если такого пользователя нет
                 return NotFound(new ErrorResponse("User not found"));
             }
 
             try
             {
+                // Удаление диалога
                 await _dialogueProvider.Delete(requester, deleteDialogueRequest);
 
                 return Ok();

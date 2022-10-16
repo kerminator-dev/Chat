@@ -31,37 +31,44 @@ namespace Chat.API.Services.Providers
             _connectionRepository = connectionRepository;
         }
 
-        public async Task SendMessage(User sender, SendMessageRequest message)
+        /// <summary>
+        /// Отправить сообщение
+        /// </summary>
+        /// <param name="sender">Отправитель</param>
+        /// <param name="sendMessageRequest">Сообщение</param>
+        /// <returns></returns>
+        /// <exception cref="ProcessingException">При отправке сообщения произошла ошибка</exception>
+        public async Task SendMessage(User sender, SendMessageRequest sendMessageRequest)
         {
             // Получние диалога
-            var dialogue = await _dialogueRepository.Get(sender, message.DialogueId);
+            var dialogue = await _dialogueRepository.Get(sender, sendMessageRequest.DialogueId);
             if (dialogue == null)
                 throw new ProcessingException("Dialogue not found!");
 
-            // Получение получателя/второго участника диалога
+            // Определение получателя сообщения/второго участника диалога
             var receiver = await _userRepository.Get(DialogueHelper.GetSecondDialogueMemberId(dialogue, sender.Id));
             if (receiver == null)
                 throw new ProcessingException("Receiver not found!");
 
-            // Инициализация модели DialogueMessage
-            var messageModel = new DialogueMessage()
+            // Инициализация модели DialogueMessage для записи в БД и оповещения обоих участников диалога
+            var message = new DialogueMessage()
             {
                 SenderId = sender.Id,
-                DialogueId = message.DialogueId,
-                Content = message.Content,
+                DialogueId = sendMessageRequest.DialogueId,
+                Content = sendMessageRequest.Content,
                 CreatedDate = DateTime.UtcNow,
             };
 
-            // Запись в БД
-            await _dialogueRepository.AddMessage(dialogue, messageModel);
+            // Запись сообщения в БД
+            await _dialogueRepository.AddMessage(dialogue, message);
 
-            // Подгрузка подключений пользователя и отправка сообщения участнику диалога
+            // Подгрузка подключений пользователя и отправка сообщения получателю
             await _connectionRepository.LoadConnections(receiver);
-            await _messagingService.SendMessage(receiver, messageModel);
+            await _messagingService.SendMessage(receiver, message);
 
             // Подгрузка подключений пользователя и отправка сообщения отправителю
             await _connectionRepository.LoadConnections(sender);
-            await _messagingService.SendMessage(sender, messageModel);
+            await _messagingService.SendMessage(sender, message);
         }
 
         public async Task<GetMessagesResponse> GetMessages(User user, GetMessagesRequest getMessagesRequest)
@@ -84,27 +91,27 @@ namespace Chat.API.Services.Providers
             };
         }
 
-        public async Task DeleteMessage(User sender, DeleteMessagesRequest deleteMessagesRequest)
+        public async Task DeleteMessages(User sender, DeleteMessagesRequest deleteMessagesRequest)
         {
             // Получение диалога
             var dialogue = await _dialogueRepository.Get(sender, deleteMessagesRequest.DialogueId);
             if (dialogue == null)
                 throw new ProcessingException("Dialogue not found!");
 
-            // Получение получателя/второго участника диалога
+            // Получение второго участника диалога
             var receiver = await _userRepository.Get(DialogueHelper.GetSecondDialogueMemberId(dialogue, sender.Id));
             if (receiver == null)
                 throw new ProcessingException("Receiver not found!");
 
-            // Получение сообщений из БД, которые нужно удалить
+            // Получение сообщений удаляемого диалога из БД
             var messagesToDelete = await _messageRepository.Get(dialogue.Id, deleteMessagesRequest.MessageIds);
             if (messagesToDelete == null || !messagesToDelete.Any())
                 throw new ProcessingException("Message not found!");
 
-            // Удаление сообщения из БД
+            // Удаление сообщений из БД
             await _messageRepository.Delete(messagesToDelete);
 
-            // Иницализация модели для оповещения
+            // Иницализация модели для оповещения участников беседы
             var deletedMessage = new DeletedMessagesDTO()
             {
                 DialogueId = deleteMessagesRequest.DialogueId,
@@ -169,7 +176,7 @@ namespace Chat.API.Services.Providers
                 (
                     new DialogueMessageDTO()
                     {
-                        Id = message.Id,
+                        MessageId = message.Id,
                         Content = message.Content,
                         Created = message.CreatedDate,
                         SenderId = message.SenderId

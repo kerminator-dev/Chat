@@ -80,11 +80,11 @@ namespace Chat.API.Services.MessagingServices
         /// <returns></returns>
         protected async Task Send<T>(User receiver, string methodName, T objectToSend)
         {
-            if (receiver.Connections is null)
+            if (receiver.HubConnections is null)
                 return;
 
             // Отправка объекта на все действительные подключения пользователя
-            foreach (var connection in receiver.Connections.Where(c => c.Connected))
+            foreach (var connection in receiver.HubConnections.Where(c => c.Connected))
             {
                 await _hubContext.Clients.Client(connection.Id).SendAsync(methodName, objectToSend);
             }

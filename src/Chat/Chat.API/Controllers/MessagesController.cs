@@ -21,6 +21,11 @@ namespace Chat.API.Controllers
             _authenticationProvider = authenticationProvider;
         }
 
+        /// <summary>
+        /// Отправить сообщение
+        /// </summary>
+        /// <param name="message">Запрос на отправку сообщения</param>
+        /// <returns></returns>
         [HttpPost("Send")]
         [Authorize]
         public async Task<IActionResult> SendMessages([FromBody] SendMessageRequest message)
@@ -30,14 +35,17 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
+            // Определение пользователя
             var messageSender = await _authenticationProvider.GetHttpContextUser(HttpContext.User);
             if (messageSender == null)
             {
+                // Если пользователь не найден
                 return NotFound(new ErrorResponse("User not found!"));
             }
 
             try
             {
+                // Отправка сообщения
                 await _messageProvider.SendMessage(messageSender, message);
             }
             catch (ProcessingException ex)
@@ -49,6 +57,11 @@ namespace Chat.API.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Получить сообщения
+        /// </summary>
+        /// <param name="getMessagesRequest"></param>
+        /// <returns></returns>
         [HttpPost("Get")]
         [Authorize]
         public async Task<IActionResult> GetMessages([FromBody] GetMessagesRequest getMessagesRequest)
@@ -58,14 +71,17 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
+            // Определение пользователя
             var user = await _authenticationProvider.GetHttpContextUser(HttpContext.User);
             if (user == null)
             {
+                // Если пользователь не найден
                 return NotFound(new ErrorResponse("User not found!"));
             }
 
             try
             {
+                // Получение сообщений
                 var messagesResponse = await _messageProvider.GetMessages(user, getMessagesRequest);
 
                 return Ok(messagesResponse);
@@ -74,11 +90,13 @@ namespace Chat.API.Controllers
             {
                 return BadRequest(new ErrorResponse(ex.Message));
             }
-            catch (Exception) { }
-
-            return Ok();
         }
 
+        /// <summary>
+        /// Удалить сообщения
+        /// </summary>
+        /// <param name="deleteMessageRequest">Запрос на удаление сообщений</param>
+        /// <returns></returns>
         [HttpDelete("Delete")]
         [Authorize]
         public async Task<IActionResult> DeleteMessages([FromBody] DeleteMessagesRequest deleteMessageRequest)
@@ -88,25 +106,32 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
+            // Определение пользователя
             var user = await _authenticationProvider.GetHttpContextUser(HttpContext.User);
             if (user == null)
             {
+                // Если пользователь не найден
                 return NotFound(new ErrorResponse("User not found!"));
             }
 
             try
             {
-                await _messageProvider.DeleteMessage(user, deleteMessageRequest);
+                // Удаление сообщения
+                await _messageProvider.DeleteMessages(user, deleteMessageRequest);
+
+                return Ok();
             }
             catch (ProcessingException ex)
             {
                 return BadRequest(new ErrorResponse(ex.Message));
             }
-            catch (Exception) { }
-
-            return Ok();
         }
 
+        /// <summary>
+        /// Изменить/обновить сообщение
+        /// </summary>
+        /// <param name="updateMessageRequest">Запрос на изменение сообщения</param>
+        /// <returns></returns>
         [HttpPatch("Update")]
         [Authorize]
         public async Task<IActionResult> UpdateMessage([FromBody] UpdateMessageRequest updateMessageRequest)
@@ -116,23 +141,25 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
+            // Определение пользователя
             var user = await _authenticationProvider.GetHttpContextUser(HttpContext.User);
             if (user == null)
             {
+                // Если пользователь не найден
                 return NotFound(new ErrorResponse("User not found!"));
             }
 
             try
             {
+                // Обновление сообщения
                 await _messageProvider.UpdateMessage(user, updateMessageRequest);
+
+                return Ok();
             }
             catch (ProcessingException ex)
             {
                 return BadRequest(new ErrorResponse(ex.Message));
             }
-            catch (Exception) { }
-
-            return Ok();
         }
     }
 }

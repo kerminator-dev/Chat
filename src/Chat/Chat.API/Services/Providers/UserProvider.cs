@@ -2,6 +2,7 @@
 using Chat.API.Exceptions;
 using Chat.API.Models.Requests;
 using Chat.API.Models.Responses;
+using Chat.API.Services.PasswordHashers;
 using Chat.API.Services.UserRepositories;
 
 namespace Chat.API.Services.Providers
@@ -9,13 +10,21 @@ namespace Chat.API.Services.Providers
     public class UserProvider
     {
         private readonly IUserRepository _userRepository;
+        private readonly IPasswordHasher _passwordHasher;
 
-        public UserProvider(IUserRepository userRepository)
+        public UserProvider(IUserRepository userRepository, IPasswordHasher passwordHasher)
         {
             _userRepository = userRepository;
+            _passwordHasher = passwordHasher;
         }
 
-        public async Task<SearchUserResponse> Search(SearchUserRequest searchUserRequest)
+        /// <summary>
+        /// Найти пользователей по никнейму
+        /// </summary>
+        /// <param name="searchUserRequest">Запрос</param>
+        /// <returns></returns>
+        /// <exception cref="ProcessingException"></exception>
+        public async Task<SearchUserResponse> SearchUsers(SearchUserRequest searchUserRequest)
         {
             // Поиск пользователей
             var foundUsers = await _userRepository.Search(searchUserRequest.Username);
@@ -31,23 +40,63 @@ namespace Chat.API.Services.Providers
             };
         }
 
-        public async Task<GetUsersResponse> Get(GetUsersRequest getUsersRequest)
+        /// <summary>
+        /// Получить пользователей
+        /// </summary>
+        /// <param name="getUsersRequest"></param>
+        /// <returns></returns>
+        /// <exception cref="ProcessingException"></exception>
+        public async Task<GetUsersResponse> GetUsers(GetUsersRequest getUsersRequest)
         {
-            // Удаление дупликатов
+            // Удаление дубликатов
             var userIds = getUsersRequest.UserIds.Distinct().ToList();
             if (userIds == null || !userIds.Any())
                 throw new ProcessingException("There is no users in request!");
 
+            // Получение списка пользователей
             var users = await _userRepository.Get(userIds);
             if (users == null || !users.Any())
                 throw new ProcessingException("Users not found!");
 
+            // Преобразование в DTO и возврат
             return new GetUsersResponse()
             {
                 Users = ToUserDTOs(users)
             };
         }
 
+        /// <summary>
+        /// Обновить пароль для пользователя
+        /// </summary>
+        /// <param name="user">Пользователь</param>
+        /// <param name="updatePasswordRequest">Запрос на изменение пароля</param>
+        /// <returns></returns>
+        /// <exception cref="ProcessingException"></exception>
+        public async Task UpdatePassword(User user, UpdatePasswordRequest updatePasswordRequest)
+        {
+            if (updatePasswordRequest.OldPassword == updatePasswordRequest.NewPassword)
+                throw new ProcessingException("New and old passwords are the same!");
+
+            var passwordIsCorrect = _passwordHasher.VerifyPassword(updatePasswordRequest.OldPassword, user.PasswordHash);
+            // Если старые пароли не совпадают, то прервать изменение пароля
+            if (!passwordIsCorrect)
+                throw new ProcessingException("Old password is not correct!");
+
+            // Хэширование нового пароля
+            var newPasswordHash = _passwordHasher.HashPassword(updatePasswordRequest.NewPassword);
+
+            // Запись хэша в Entity
+            user.PasswordHash = newPasswordHash;
+
+            // Сохранение Entity в БД
+            await _userRepository.Update(user);
+        }
+
+        /// <summary>
+        /// Преобразовать коллекцию типа User в коллекцию UserDTO 
+        /// </summary>
+        /// <param name="users">Коллекция пользователей</param>
+        /// <returns>Коллекия пользователей DTO</returns>
         private static ICollection<UserDTO> ToUserDTOs(ICollection<User> users)
         {
             var result = new List<UserDTO>();

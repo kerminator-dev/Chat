@@ -3,7 +3,7 @@ using Chat.API.Entities;
 
 namespace Chat.API.Models.Responses
 {
-    public class DialoguesResponse
+    public class GetDialoguesResponse
     {
         public int UserId { get; set; }
 

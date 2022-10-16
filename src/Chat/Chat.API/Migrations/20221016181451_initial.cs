@@ -10,20 +10,6 @@ namespace Chat.API.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Conversations",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Title = table.Column<string>(type: "TEXT", nullable: false),
-                    Created = table.Column<DateTime>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Conversations", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Dialogues",
                 columns: table => new
                 {
@@ -75,8 +61,8 @@ namespace Chat.API.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    SenderId = table.Column<int>(type: "INTEGER", nullable: false),
                     DialogueId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SenderId = table.Column<int>(type: "INTEGER", nullable: false),
                     Content = table.Column<string>(type: "TEXT", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
@@ -111,45 +97,10 @@ namespace Chat.API.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "ConversationUser",
-                columns: table => new
-                {
-                    ConversationsId = table.Column<int>(type: "INTEGER", nullable: false),
-                    MembersId = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ConversationUser", x => new { x.ConversationsId, x.MembersId });
-                    table.ForeignKey(
-                        name: "FK_ConversationUser_Conversations_ConversationsId",
-                        column: x => x.ConversationsId,
-                        principalTable: "Conversations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ConversationUser_Users_MembersId",
-                        column: x => x.MembersId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Connections_UserId_Id",
                 table: "Connections",
                 columns: new[] { "UserId", "Id" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Conversations_Id",
-                table: "Conversations",
-                column: "Id",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ConversationUser_MembersId",
-                table: "ConversationUser",
-                column: "MembersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Dialogues_Id",
@@ -192,16 +143,10 @@ namespace Chat.API.Migrations
                 name: "Connections");
 
             migrationBuilder.DropTable(
-                name: "ConversationUser");
-
-            migrationBuilder.DropTable(
                 name: "Messages");
 
             migrationBuilder.DropTable(
                 name: "RefreshTokens");
-
-            migrationBuilder.DropTable(
-                name: "Conversations");
 
             migrationBuilder.DropTable(
                 name: "Users");

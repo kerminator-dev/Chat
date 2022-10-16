@@ -24,6 +24,11 @@ namespace Chat.API.Controllers
             _passwordHasher = passwordHasher;
         }
 
+        /// <summary>
+        /// Зарегистрироваться
+        /// </summary>
+        /// <param name="registerRequest">Запрос на регистрацию</param>
+        /// <returns></returns>
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
         {
@@ -32,15 +37,17 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
-            registerRequest.Username = registerRequest.Username.ToLower();
-            User existingUserByUsername = await _authenticationProvider.GetUser(registerRequest.Username);
+            // Поиск пользователя с указанным username
+            User existingUserByUsername = await _authenticationProvider.GetUser(registerRequest.Username.ToLower());
             if (existingUserByUsername != null)
             {
+                // Если пользователь с таким username уже существует
                 return Conflict(new ErrorResponse("Username already exists."));
             }
 
             try
             {
+                // Регистрация пользователя
                 await _authenticationProvider.RegisterUser(registerRequest);
             }
             catch (ProcessingException ex)
@@ -51,6 +58,12 @@ namespace Chat.API.Controllers
             return Ok();
         }
 
+
+        /// <summary>
+        /// Выполнить вход в аккаунт
+        /// </summary>
+        /// <param name="loginRequest">Запрос на вход</param>
+        /// <returns></returns>
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
@@ -59,21 +72,25 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
-            loginRequest.Username = loginRequest.Username.ToLower();
-            User user = await _authenticationProvider.GetUser(loginRequest.Username);
+            // Поиск пользователя по username
+            User user = await _authenticationProvider.GetUser(loginRequest.Username.ToLower());
             if (user == null)
             {
+                // Если такого пользователя не существует
                 return Unauthorized();
             }
 
+            // Проверка пароля
             bool isCorrectPassword = _passwordHasher.VerifyPassword(loginRequest.Password, user.PasswordHash);
             if (!isCorrectPassword)
             {
+                // Если пароль неверный
                 return Unauthorized();
             }
 
             try
             { 
+                // Выполнение аутентификации
                 AuthenticatedUserResponse response = await _authenticationProvider.AuthenticateUser(user);
 
                 return Ok(response);
@@ -84,6 +101,11 @@ namespace Chat.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Поменять токен
+        /// </summary>
+        /// <param name="refreshTokenRequest">Запрос на смену токена</param>
+        /// <returns></returns>
         [HttpPost("RefreshToken")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest)
         {
@@ -92,28 +114,36 @@ namespace Chat.API.Controllers
                 return BadRequestModelState();
             }
 
+            // Проверка refresh-токена
             bool isValidRefreshToken = _authenticationProvider.ValidateRefreshToken(refreshTokenRequest.RefreshToken);
             if (!isValidRefreshToken)
             {
+                // Если токен неверный
                 return BadRequest(new ErrorResponse("Invalid refresh token"));
             }
 
+            // Поиск токена в БД
             RefreshToken token = await _refreshTokenRepository.GetByToken(refreshTokenRequest.RefreshToken);
             if (token == null)
             {
+                // Если токен не найден
                 return BadRequest(new ErrorResponse("Invalid refresh token"));
             }
 
+            // Удаление старого токена из БД
             await _refreshTokenRepository.Delete(token.Id);
 
+            // Поиск пользователя
             User user = await _authenticationProvider.GetUser(token.UserId);  
             if (user == null)
             {
+                // Если пользователь не найден
                 return NotFound(new ErrorResponse("User not found"));
             }
 
             try
             { 
+                // Выполнение аутентификации/генерации токенов
                 AuthenticatedUserResponse response = await _authenticationProvider.AuthenticateUser(user);
 
                 return Ok(response);
@@ -123,7 +153,5 @@ namespace Chat.API.Controllers
                 return Conflict(new ErrorResponse(ex.Message));
             }
         }
-
-
     }
 }
