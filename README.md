@@ -1,10 +1,14 @@
 # Review
  ## Full stack chat application.
+ 
+This project was made to improve knowlegde of building a .NET WEB applications with WEB Api and also can have many flaws. I would be appreciate for a new suggestions to improve the code. 
+
+The basic and general principle is simple text messaging to another users with ability to encrypt messages on client-sides. Any other additional functionality will be considered redundant.
+ 
  ### Main functionality:
  - Register/Login/Logout
  - Receive and send in real-time text messages from/to another users throw dialogues
- - Update profile image and profile data
- - Block/unblock users 
+ - Update profile name, color, password
  - Have multiple devices with different client apps, connected to one account. 
  
 ### Current back-end stack:
@@ -15,7 +19,11 @@
 - SignalR
 - BCrypt
 
-# To do: back-end and client apps:
+### Current client-side stack:
+- MVVM
+- WPF
+
+# 🚩 To do: back-end and client apps:
 ## Back-end methods:
 ✅ Authentication:
 - ✅ Registration
@@ -33,33 +41,25 @@
 - ✅ Update message in dialogue, real-time SignalR notficiation 
 - ✅ Get user's message list 
 
-❌ Users:
+✅ Users:
 - ✅ Find user's by username
 - ✅ Get user's info by user id
-- ❌ Add user to black list
-- ❌ Delete user from black list
 
 ❌ Profile:
-- ❌ Update avatar (256x256 - big size, also server side converts big image to small size 32x32 and generates <a href="https://github.com/MarkusPalcer/blurhash.net">blur hash</a> string)
+- ❌ Update user color
 - ❌ Update name
 - ✅ Update password
 
-❌ Tiny notifications:
-- ❌ User gets online/offline
-- ❌ User typing message in dialogue
-
-❌ Conversations (Optional & not necessary):
-- ❌ Create conversation with multiple users
-- ❌ Join conversation
-- ❌ Left conversation
+❓ Tiny notifications (optional and not necessary):
+- ❓ User gets online/offline
+- ❓ User typing message in dialogue
 
 ## Client side:
-- ❌ MVVM .NET MAUI Android client app
-- ❌ MVVM .NET MAUI Windows client app (optional)
+- ❌ MVVM .NET WPF client app
 - 🚩 <a href="https://github.com/ertanfird/simplify">Single page React web app</a> by <a href="https://github.com/ertanfird">Ertanfird</a>
 
 ## Refactoring:
-- ❌ Review database
+- ❌ Review database models
 - ❌ Review code semantics
 - ❌ Review exception handling
 - ❌ Comment logic
