@@ -1,4 +1,6 @@
-﻿namespace Chat.API.Entities
+﻿using System.Drawing;
+
+namespace Chat.API.Entities
 {
     /// <summary>
     /// Пользователь
@@ -24,6 +26,11 @@
         /// Имя пользователя
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Цвет в Int - альтернатива аватарке
+        /// </summary>
+        public int Color { get; set; }
 
         /// <summary>
         /// Дата и время регистрация пользователя

@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Chat.API.Models.Requests
+namespace Chat.API.DTOs.Requests
 {
-    public class UpdatePasswordRequest
+    public class UpdatePasswordRequestDTO
     {
         [Required(ErrorMessage = "Old password is required!")]
         [MinLength(6, ErrorMessage = "Min password length is 6 characters!")]

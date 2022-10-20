@@ -2,8 +2,8 @@
 using Chat.API.Entities;
 using Chat.API.Exceptions;
 using Chat.API.Helpers;
-using Chat.API.Models.Requests;
-using Chat.API.Models.Responses;
+using Chat.API.DTOs.Requests;
+using Chat.API.DTOs.Responses;
 using Chat.API.Services.ConnectionRepositories;
 using Chat.API.Services.DialogueRepositories;
 using Chat.API.Services.MessagingServices;
@@ -26,18 +26,18 @@ namespace Chat.API.Services.Providers
             _connectionRepository = connectionRepository;
         }
 
-        public async Task<GetDialoguesResponse> GetAll(User user)
+        public async Task<GetDialoguesResponseDTO> GetAll(User user)
         {           
-           // Получение списка диалогов пользователя с последними сообщениями
+            // Получение списка диалогов пользователя с последними сообщениями
             var dialoguesWithLastMessages = await _dialogueRepository.GetDialoguesWithLastMessages(user);
-            if (dialoguesWithLastMessages == null || dialoguesWithLastMessages.Count == 0)
-                throw new ProcessingException("Dialogues not found!");
+            // if (dialoguesWithLastMessages == null || dialoguesWithLastMessages.Count == 0)
+            //     throw new ProcessingException("Dialogues not found!");
 
             // Преобразование List<Dialogues> dialoguesWithLastMessages в List<DialogueWithLastMessageDTO>
             var dialogueDTOs = ToDialogMessageDTOs(dialoguesWithLastMessages);
 
             // Создание DialoguesResponse
-            var dialoguesResponse = new GetDialoguesResponse()
+            var dialoguesResponse = new GetDialoguesResponseDTO()
             {
                 UserId = user.Id,
                 Dialogues = dialogueDTOs
@@ -81,7 +81,7 @@ namespace Chat.API.Services.Providers
             await _messagingService.SendCreatedDialogue(dialogueMember, createdDialogueDTO);
         }
 
-        public async Task Delete(User user, DeleteDialogueRequest deleteDialogueRequest)
+        public async Task Delete(User user, DeleteDialogueRequestDTO deleteDialogueRequest)
         {
             // Поиск нужного диалога в списке диалогов пользователя
             var dialogueToDelete = await _dialogueRepository.Get(user, deleteDialogueRequest.DialogueId);
@@ -116,8 +116,11 @@ namespace Chat.API.Services.Providers
              await _messagingService.SendDeletedDialogue(user, deletedDialogue);
         }
 
-        private static ICollection<DialogueWithLastMessageDTO> ToDialogMessageDTOs(ICollection<Dialogue> dialogues)
+        private static ICollection<DialogueWithLastMessageDTO>? ToDialogMessageDTOs(ICollection<Dialogue> dialogues)
         {
+            if (dialogues == null)
+                return null;
+
             List<DialogueWithLastMessageDTO> result = new List<DialogueWithLastMessageDTO>();
 
             foreach (var dialogue in dialogues)

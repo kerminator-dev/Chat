@@ -1,8 +1,8 @@
 ﻿using Chat.API.Entities;
 
-namespace Chat.API.Models.Responses
+namespace Chat.API.DTOs.Responses
 {
-    public class AuthenticatedUserResponse
+    public class AuthenticatedUserResponseDTO
     {
         public UserDTO User { get; set; }
 
@@ -28,7 +28,7 @@ namespace Chat.API.Models.Responses
         /// </summary>
         public double RefreshTokenExpirationMinutes { get; set; }
 
-        public AuthenticatedUserResponse(UserDTO user, string accessToken, double accessTokenExpirationMinutes, string refreshToken, double refreshTokenExpirationMinutes)
+        public AuthenticatedUserResponseDTO(UserDTO user, string accessToken, double accessTokenExpirationMinutes, string refreshToken, double refreshTokenExpirationMinutes)
         {
             User = user;
             AccessToken = accessToken;

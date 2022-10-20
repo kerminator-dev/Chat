@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Chat.API.Models.Requests
+namespace Chat.API.DTOs.Requests
 {
-    public class CreateDialogueRequest
+    public class CreateDialogueRequestDTO
     {
         [Required(ErrorMessage = "User is required!")]
         public int TargetUserId { get; set; }

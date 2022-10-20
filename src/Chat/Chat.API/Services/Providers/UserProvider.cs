@@ -1,7 +1,7 @@
 ﻿using Chat.API.Entities;
 using Chat.API.Exceptions;
-using Chat.API.Models.Requests;
-using Chat.API.Models.Responses;
+using Chat.API.DTOs.Requests;
+using Chat.API.DTOs.Responses;
 using Chat.API.Services.PasswordHashers;
 using Chat.API.Services.UserRepositories;
 
@@ -24,7 +24,7 @@ namespace Chat.API.Services.Providers
         /// <param name="searchUserRequest">Запрос</param>
         /// <returns></returns>
         /// <exception cref="ProcessingException"></exception>
-        public async Task<SearchUserResponse> SearchUsers(SearchUserRequest searchUserRequest)
+        public async Task<SearchUserResponseDTO> SearchUsers(SearchUserRequestDTO searchUserRequest)
         {
             // Поиск пользователей
             var foundUsers = await _userRepository.Search(searchUserRequest.Username);
@@ -34,7 +34,7 @@ namespace Chat.API.Services.Providers
             }
 
             // Возврат результата
-            return new SearchUserResponse()
+            return new SearchUserResponseDTO()
             {
                 Users = ToUserDTOs(foundUsers)
             };
@@ -46,7 +46,7 @@ namespace Chat.API.Services.Providers
         /// <param name="getUsersRequest"></param>
         /// <returns></returns>
         /// <exception cref="ProcessingException"></exception>
-        public async Task<GetUsersResponse> GetUsers(GetUsersRequest getUsersRequest)
+        public async Task<GetUsersResponseDTO> GetUsers(GetUsersRequestDTO getUsersRequest)
         {
             // Удаление дубликатов
             var userIds = getUsersRequest.UserIds.Distinct().ToList();
@@ -59,7 +59,7 @@ namespace Chat.API.Services.Providers
                 throw new ProcessingException("Users not found!");
 
             // Преобразование в DTO и возврат
-            return new GetUsersResponse()
+            return new GetUsersResponseDTO()
             {
                 Users = ToUserDTOs(users)
             };
@@ -72,7 +72,7 @@ namespace Chat.API.Services.Providers
         /// <param name="updatePasswordRequest">Запрос на изменение пароля</param>
         /// <returns></returns>
         /// <exception cref="ProcessingException"></exception>
-        public async Task UpdatePassword(User user, UpdatePasswordRequest updatePasswordRequest)
+        public async Task UpdatePassword(User user, UpdatePasswordRequestDTO updatePasswordRequest)
         {
             if (updatePasswordRequest.OldPassword == updatePasswordRequest.NewPassword)
                 throw new ProcessingException("New and old passwords are the same!");
@@ -92,6 +92,20 @@ namespace Chat.API.Services.Providers
             await _userRepository.Update(user);
         }
 
+        public async Task UpdateColor(User user, int color)
+        {
+            user.Color = color;
+
+            await _userRepository.Update(user);
+        }
+
+        public async Task UpdateName(User user, string newName)
+        {
+            user.Name = newName;
+
+            await _userRepository.Update(user);
+        }
+
         /// <summary>
         /// Преобразовать коллекцию типа User в коллекцию UserDTO 
         /// </summary>
@@ -107,7 +121,8 @@ namespace Chat.API.Services.Providers
                 {
                     Id = user.Id,
                     Name = user.Name,
-                    Username = user.Username
+                    Username = user.Username,
+                    Color = user.Color,
                 };
 
                 result.Add(userDTO);

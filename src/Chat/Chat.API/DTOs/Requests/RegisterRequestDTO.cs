@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Drawing;
 
-namespace Chat.API.Models.Requests
+namespace Chat.API.DTOs.Requests
 {
-    public class RegisterRequest
+    public class RegisterRequestDTO
     {
         [Required(ErrorMessage = "Username is required!")]
         [MinLength(3, ErrorMessage = "Min username length is 3 characters!")]
@@ -19,5 +20,8 @@ namespace Chat.API.Models.Requests
         [MinLength(2, ErrorMessage = "Min name length is 2 characters!")]
         [MaxLength(20, ErrorMessage = "Max name length is 20 characters!")]
         public string Name { get; set; }
+
+        [Required(ErrorMessage = "Color is required!")]
+        public int Color { get; set; }
     }
 }

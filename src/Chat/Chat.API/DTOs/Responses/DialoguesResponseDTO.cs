@@ -1,9 +1,9 @@
 ﻿using Chat.API.DTOs;
 using Chat.API.Entities;
 
-namespace Chat.API.Models.Responses
+namespace Chat.API.DTOs.Responses
 {
-    public class GetDialoguesResponse
+    public class GetDialoguesResponseDTO
     {
         public int UserId { get; set; }
 

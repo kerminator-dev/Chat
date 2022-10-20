@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Chat.API.Models.Requests
+namespace Chat.API.DTOs.Requests
 {
-    public class GetUsersRequest
+    public class GetUsersRequestDTO
     {
         [Required(ErrorMessage = "Users are required!")]
         [MinLength(1, ErrorMessage = "Min required count of users is 1!")]

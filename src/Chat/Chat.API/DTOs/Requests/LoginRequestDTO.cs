@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Chat.API.Models.Requests
+namespace Chat.API.DTOs.Requests
 {
-    public class LoginRequest
+    public class LoginRequestDTO
     {
         [Required(ErrorMessage = "Username is required!")]
         [MinLength(3, ErrorMessage = "Min username length is 3 characters!")]

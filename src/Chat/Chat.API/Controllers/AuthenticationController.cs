@@ -1,11 +1,12 @@
 ﻿using Chat.API.Entities;
 using Chat.API.Exceptions;
-using Chat.API.Models.Requests;
-using Chat.API.Models.Responses;
+using Chat.API.DTOs.Requests;
+using Chat.API.DTOs.Responses;
 using Chat.API.Services.PasswordHashers;
 using Chat.API.Services.Providers;
 using Chat.API.Services.RefreshTokenRepositories;
 using Microsoft.AspNetCore.Mvc;
+using Chat.API.DTOs.Responses.TechnicalMessages;
 
 namespace Chat.API.Controllers
 {
@@ -30,7 +31,7 @@ namespace Chat.API.Controllers
         /// <param name="registerRequest">Запрос на регистрацию</param>
         /// <returns></returns>
         [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDTO registerRequest)
         {
             if (!ModelState.IsValid)
             {
@@ -42,7 +43,7 @@ namespace Chat.API.Controllers
             if (existingUserByUsername != null)
             {
                 // Если пользователь с таким username уже существует
-                return Conflict(new ErrorResponse("Username already exists."));
+                return Conflict(new ErrorResponseDTO("Username already exists."));
             }
 
             try
@@ -52,7 +53,7 @@ namespace Chat.API.Controllers
             }
             catch (ProcessingException ex)
             {
-                return Conflict(new ErrorResponse(ex.Message));
+                return Conflict(new ErrorResponseDTO(ex.Message));
             }
 
             return Ok();
@@ -65,7 +66,7 @@ namespace Chat.API.Controllers
         /// <param name="loginRequest">Запрос на вход</param>
         /// <returns></returns>
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDTO loginRequest)
         {
             if (!ModelState.IsValid)
             {
@@ -91,13 +92,13 @@ namespace Chat.API.Controllers
             try
             { 
                 // Выполнение аутентификации
-                AuthenticatedUserResponse response = await _authenticationProvider.AuthenticateUser(user);
+                AuthenticatedUserResponseDTO response = await _authenticationProvider.AuthenticateUser(user);
 
                 return Ok(response);
             }
             catch (ProcessingException ex)
             {
-                return Conflict(new ErrorResponse(ex.Message));
+                return Conflict(new ErrorResponseDTO(ex.Message));
             }
         }
 
@@ -107,7 +108,7 @@ namespace Chat.API.Controllers
         /// <param name="refreshTokenRequest">Запрос на смену токена</param>
         /// <returns></returns>
         [HttpPost("RefreshToken")]
-        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDTO refreshTokenRequest)
         {
             if (!ModelState.IsValid)
             {
@@ -119,7 +120,7 @@ namespace Chat.API.Controllers
             if (!isValidRefreshToken)
             {
                 // Если токен неверный
-                return BadRequest(new ErrorResponse("Invalid refresh token"));
+                return BadRequest(new ErrorResponseDTO("Invalid refresh token"));
             }
 
             // Поиск токена в БД
@@ -127,7 +128,7 @@ namespace Chat.API.Controllers
             if (token == null)
             {
                 // Если токен не найден
-                return BadRequest(new ErrorResponse("Invalid refresh token"));
+                return BadRequest(new ErrorResponseDTO("Invalid refresh token"));
             }
 
             // Удаление старого токена из БД
@@ -138,19 +139,19 @@ namespace Chat.API.Controllers
             if (user == null)
             {
                 // Если пользователь не найден
-                return NotFound(new ErrorResponse("User not found"));
+                return NotFound(new ErrorResponseDTO("User not found"));
             }
 
             try
             { 
                 // Выполнение аутентификации/генерации токенов
-                AuthenticatedUserResponse response = await _authenticationProvider.AuthenticateUser(user);
+                AuthenticatedUserResponseDTO response = await _authenticationProvider.AuthenticateUser(user);
 
                 return Ok(response);
             }
             catch (ProcessingException ex)
             {
-                return Conflict(new ErrorResponse(ex.Message));
+                return Conflict(new ErrorResponseDTO(ex.Message));
             }
         }
     }

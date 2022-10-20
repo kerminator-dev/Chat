@@ -1,4 +1,6 @@
-﻿namespace Chat.API.Models.Responses
+﻿using System.Drawing;
+
+namespace Chat.API.DTOs.Responses
 {
     /// <summary>
     /// Пользователь
@@ -19,5 +21,10 @@
         /// Имя
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Цвет
+        /// </summary>
+        public int Color { get; set; }
     }
 }

@@ -1,11 +1,12 @@
 ﻿using Chat.API.Exceptions;
-using Chat.API.Models.Requests;
-using Chat.API.Models.Responses;
+using Chat.API.DTOs.Requests;
+using Chat.API.DTOs.Responses;
 using Chat.API.Services.Providers;
 using Chat.API.Services.UserRepositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Chat.API.DTOs.Responses.TechnicalMessages;
 
 namespace Chat.API.Controllers
 {
@@ -29,7 +30,7 @@ namespace Chat.API.Controllers
         /// <returns></returns>
         [HttpPatch("Password/Update")]
         [Authorize]
-        public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequest updatePasswordRequest)
+        public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequestDTO updatePasswordRequest)
         {
             if (!ModelState.IsValid)
             {
@@ -41,7 +42,7 @@ namespace Chat.API.Controllers
             if (user == null)
             {
                 // Если пользователь не найден
-                return NotFound(new ErrorResponse("User not found!"));
+                return NotFound(new ErrorResponseDTO("User not found!"));
             }
 
             try
@@ -53,7 +54,65 @@ namespace Chat.API.Controllers
             }
             catch (ProcessingException ex)
             {
-                return BadRequest(new ErrorResponse(ex.Message));
+                return BadRequest(new ErrorResponseDTO(ex.Message));
+            }
+        }
+
+        [HttpPatch("Color/Update")]
+        [Authorize]
+        public async Task<IActionResult> UpdateColor([FromBody] UpdateColorRequestDTO updateColorRequestDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return base.BadRequestModelState();
+            }
+
+            // Определение пользователя
+            var user = await _authenticationProvider.GetHttpContextUser(HttpContext.User);
+            if (user == null)
+            {
+                // Если пользователь не найден
+                return NotFound(new ErrorResponseDTO("User not found!"));
+            }
+
+            try
+            {
+                await _userProvider.UpdateColor(user, updateColorRequestDTO.Color);
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPatch("Name/Update")]
+        [Authorize]
+        public async Task<IActionResult> UpdateName([FromBody] UpdateNameRequestDTO updateNameRequestDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return base.BadRequestModelState();
+            }
+
+            // Определение пользователя
+            var user = await _authenticationProvider.GetHttpContextUser(HttpContext.User);
+            if (user == null)
+            {
+                // Если пользователь не найден
+                return NotFound(new ErrorResponseDTO("User not found!"));
+            }
+
+            try
+            {
+                await _userProvider.UpdateName(user, updateNameRequestDTO.Name);
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
             }
         }
     }

@@ -2,8 +2,8 @@
 using Chat.API.Entities;
 using Chat.API.Exceptions;
 using Chat.API.Helpers;
-using Chat.API.Models.Requests;
-using Chat.API.Models.Responses;
+using Chat.API.DTOs.Requests;
+using Chat.API.DTOs.Responses;
 using Chat.API.Services.ConnectionRepositories;
 using Chat.API.Services.DialogueRepositories;
 using Chat.API.Services.MessageRepositories;
@@ -38,7 +38,7 @@ namespace Chat.API.Services.Providers
         /// <param name="sendMessageRequest">Сообщение</param>
         /// <returns></returns>
         /// <exception cref="ProcessingException">При отправке сообщения произошла ошибка</exception>
-        public async Task SendMessage(User sender, SendMessageRequest sendMessageRequest)
+        public async Task SendMessage(User sender, SendMessageRequestDTO sendMessageRequest)
         {
             // Получние диалога
             var dialogue = await _dialogueRepository.Get(sender, sendMessageRequest.DialogueId);
@@ -71,7 +71,7 @@ namespace Chat.API.Services.Providers
             await _messagingService.SendMessage(sender, message);
         }
 
-        public async Task<GetMessagesResponse> GetMessages(User user, GetMessagesRequest getMessagesRequest)
+        public async Task<GetMessagesResponseDTO> GetMessages(User user, GetMessagesRequestDTO getMessagesRequest)
         {
             // Получение диалога
             var dialogue = await _dialogueRepository.Get(user, getMessagesRequest.DialogueId);
@@ -80,18 +80,18 @@ namespace Chat.API.Services.Providers
 
             // Получение списка сообщений диалога
             var messages = await _messageRepository.Get(dialogue, getMessagesRequest.Count, getMessagesRequest.Offset);
-            if (messages == null || !messages.Any())
-                throw new ProcessingException("No messages!");
+            // if (messages == null || !messages.Any())
+            //     throw new ProcessingException("No messages!");
 
             // Возврат результата выполнения
-            return new GetMessagesResponse()
+            return new GetMessagesResponseDTO()
             {
                 DialogueId = dialogue.Id,
                 Messages = ToDialogueMessageDTOs(messages)
             };
         }
 
-        public async Task DeleteMessages(User sender, DeleteMessagesRequest deleteMessagesRequest)
+        public async Task DeleteMessages(User sender, DeleteMessagesRequestDTO deleteMessagesRequest)
         {
             // Получение диалога
             var dialogue = await _dialogueRepository.Get(sender, deleteMessagesRequest.DialogueId);
@@ -128,7 +128,7 @@ namespace Chat.API.Services.Providers
             await _messagingService.SendDeletedMessage(receiver, deletedMessage);
         }
 
-        public async Task UpdateMessage(User sender, UpdateMessageRequest updateMessageRequest)
+        public async Task UpdateMessage(User sender, UpdateMessageRequestDTO updateMessageRequest)
         {
             // Получение сообщения
             var message = await _messageRepository.Get(updateMessageRequest.DialogueId, updateMessageRequest.MessageId);
@@ -166,8 +166,11 @@ namespace Chat.API.Services.Providers
             await _messagingService.SendUpdatedMessage(receiver, updatedMessageDTO);
         }
 
-        private static ICollection<DialogueMessageDTO> ToDialogueMessageDTOs(ICollection<DialogueMessage> dialogueMessages)
+        private static ICollection<DialogueMessageDTO>? ToDialogueMessageDTOs(ICollection<DialogueMessage> dialogueMessages)
         {
+            if (dialogueMessages == null)
+                return null;
+
             var messageDTOs = new List<DialogueMessageDTO>();
 
             foreach (var message in dialogueMessages)

@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Chat.API.Models.Requests;
-using Chat.API.Models.Responses;
+using Chat.API.DTOs.Requests;
+using Chat.API.DTOs.Responses;
 using Chat.API.Services.Providers;
 using Chat.API.Exceptions;
+using Chat.API.DTOs.Responses.TechnicalMessages;
 
 namespace Chat.API.Controllers
 {
@@ -28,7 +29,7 @@ namespace Chat.API.Controllers
         /// <returns></returns>
         [HttpPost("Send")]
         [Authorize]
-        public async Task<IActionResult> SendMessages([FromBody] SendMessageRequest message)
+        public async Task<IActionResult> SendMessages([FromBody] SendMessageRequestDTO message)
         {
             if (!ModelState.IsValid)
             {
@@ -40,7 +41,7 @@ namespace Chat.API.Controllers
             if (messageSender == null)
             {
                 // Если пользователь не найден
-                return NotFound(new ErrorResponse("User not found!"));
+                return NotFound(new ErrorResponseDTO("User not found!"));
             }
 
             try
@@ -50,7 +51,7 @@ namespace Chat.API.Controllers
             }
             catch (ProcessingException ex)
             {
-                return BadRequest(new ErrorResponse(ex.Message));
+                return BadRequest(new ErrorResponseDTO(ex.Message));
             }
             catch (Exception) { }
 
@@ -64,7 +65,7 @@ namespace Chat.API.Controllers
         /// <returns></returns>
         [HttpPost("Get")]
         [Authorize]
-        public async Task<IActionResult> GetMessages([FromBody] GetMessagesRequest getMessagesRequest)
+        public async Task<IActionResult> GetMessages([FromBody] GetMessagesRequestDTO getMessagesRequest)
         {
             if (!ModelState.IsValid)
             {
@@ -76,7 +77,7 @@ namespace Chat.API.Controllers
             if (user == null)
             {
                 // Если пользователь не найден
-                return NotFound(new ErrorResponse("User not found!"));
+                return NotFound(new ErrorResponseDTO("User not found!"));
             }
 
             try
@@ -88,7 +89,7 @@ namespace Chat.API.Controllers
             }
             catch (ProcessingException ex)
             {
-                return BadRequest(new ErrorResponse(ex.Message));
+                return BadRequest(new ErrorResponseDTO(ex.Message));
             }
         }
 
@@ -99,7 +100,7 @@ namespace Chat.API.Controllers
         /// <returns></returns>
         [HttpDelete("Delete")]
         [Authorize]
-        public async Task<IActionResult> DeleteMessages([FromBody] DeleteMessagesRequest deleteMessageRequest)
+        public async Task<IActionResult> DeleteMessages([FromBody] DeleteMessagesRequestDTO deleteMessageRequest)
         {
             if (!ModelState.IsValid)
             {
@@ -111,7 +112,7 @@ namespace Chat.API.Controllers
             if (user == null)
             {
                 // Если пользователь не найден
-                return NotFound(new ErrorResponse("User not found!"));
+                return NotFound(new ErrorResponseDTO("User not found!"));
             }
 
             try
@@ -123,7 +124,7 @@ namespace Chat.API.Controllers
             }
             catch (ProcessingException ex)
             {
-                return BadRequest(new ErrorResponse(ex.Message));
+                return BadRequest(new ErrorResponseDTO(ex.Message));
             }
         }
 
@@ -134,7 +135,7 @@ namespace Chat.API.Controllers
         /// <returns></returns>
         [HttpPatch("Update")]
         [Authorize]
-        public async Task<IActionResult> UpdateMessage([FromBody] UpdateMessageRequest updateMessageRequest)
+        public async Task<IActionResult> UpdateMessage([FromBody] UpdateMessageRequestDTO updateMessageRequest)
         {
             if (!ModelState.IsValid)
             {
@@ -146,7 +147,7 @@ namespace Chat.API.Controllers
             if (user == null)
             {
                 // Если пользователь не найден
-                return NotFound(new ErrorResponse("User not found!"));
+                return NotFound(new ErrorResponseDTO("User not found!"));
             }
 
             try
@@ -158,7 +159,7 @@ namespace Chat.API.Controllers
             }
             catch (ProcessingException ex)
             {
-                return BadRequest(new ErrorResponse(ex.Message));
+                return BadRequest(new ErrorResponseDTO(ex.Message));
             }
         }
     }

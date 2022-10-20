@@ -1,4 +1,5 @@
-﻿using Chat.API.Models.Responses;
+﻿using Chat.API.DTOs.Responses;
+using Chat.API.DTOs.Responses.TechnicalMessages;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chat.API.Controllers
@@ -14,7 +15,7 @@ namespace Chat.API.Controllers
             // Получение списка ошибок модели
             IEnumerable<string> errorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
 
-            return BadRequest(new ErrorResponse(errorMessages));
+            return BadRequest(new ErrorResponseDTO(errorMessages));
         }
     }
 }

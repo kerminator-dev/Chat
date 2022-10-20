@@ -1,7 +1,7 @@
 ﻿using Chat.API.Entities;
 using Chat.API.Models;
-using Chat.API.Models.Requests;
-using Chat.API.Models.Responses;
+using Chat.API.DTOs.Requests;
+using Chat.API.DTOs.Responses;
 using Chat.API.Services.PasswordHashers;
 using Chat.API.Services.RefreshTokenRepositories;
 using Chat.API.Services.TokenGenerators;
@@ -43,7 +43,7 @@ namespace Chat.API.Services.Providers
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<AuthenticatedUserResponse> AuthenticateUser(User user)
+        public async Task<AuthenticatedUserResponseDTO> AuthenticateUser(User user)
         {
             // Генерация access-токена для пользователя
             string accessToken = _accessTokenGenerator.GenerateToken(user);
@@ -64,13 +64,14 @@ namespace Chat.API.Services.Providers
             );
 
             // Возврат результата
-            return new AuthenticatedUserResponse
+            return new AuthenticatedUserResponseDTO
             (
                 user: new UserDTO()
                 { 
                     Id = user.Id,
                     Username = user.Username,
-                    Name = user.Name
+                    Name = user.Name,
+                    Color = user.Color,
                 },
                 accessToken: accessToken,
                 accessTokenExpirationMinutes: _authenticationConfiguration.AccessTokenExpirationMinutes,
@@ -119,7 +120,7 @@ namespace Chat.API.Services.Providers
         /// </summary>
         /// <param name="registerRequest"></param>
         /// <returns></returns>
-        public async Task RegisterUser(RegisterRequest registerRequest)
+        public async Task RegisterUser(RegisterRequestDTO registerRequest)
         {
             // Генерация хэша пароля
             string passwordHash = _passwordHasher.HashPassword(registerRequest.Password);
@@ -130,6 +131,7 @@ namespace Chat.API.Services.Providers
                 Username = registerRequest.Username,
                 PasswordHash = passwordHash,
                 Name = registerRequest.Name,
+                Color = registerRequest.Color,
             };
 
             // Добавление в БД

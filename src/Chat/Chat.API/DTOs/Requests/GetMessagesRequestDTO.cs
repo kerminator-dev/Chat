@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Chat.API.Models.Requests
+namespace Chat.API.DTOs.Requests
 {
-    public class GetMessagesRequest
+    public class GetMessagesRequestDTO
     {
         [Required(ErrorMessage = "Dialogue is required!")]
         public int DialogueId { get; set; }
