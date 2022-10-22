@@ -45,20 +45,23 @@ The basic and general principle is simple text messaging to another users with a
 - ✅ Find user's by username
 - ✅ Get user's info by user id
 
-❌ Profile:
-- ❌ Update user color
-- ❌ Update name
+✅ Profile:
+- ✅ Update user color
+- ✅ Update name
 - ✅ Update password
 
 ❓ Tiny notifications (optional and not necessary):
 - ❓ User gets online/offline
 - ❓ User typing message in dialogue
 
+
+
 ## Client side:
 - ❌ MVVM .NET WPF client app
 - 🚩 <a href="https://github.com/ertanfird/simplify">Single page React web app</a> by <a href="https://github.com/ertanfird">Ertanfird</a>
 
 ## Refactoring:
+- ❌ Rewrite controllers with MediatR and CQRS pattern
 - ❌ Review database models
 - ❌ Review code semantics
 - ❌ Review exception handling
