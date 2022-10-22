@@ -1,5 +1,4 @@
 ﻿using Chat.API.DTOs.Responses;
-using Chat.API.DTOs.Responses.TechnicalMessages;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chat.API.Controllers
@@ -10,12 +9,42 @@ namespace Chat.API.Controllers
         /// Получить список ошибок состояния модели
         /// </summary>
         /// <returns></returns>
-        protected IActionResult BadRequestModelState()
+        protected BadRequestObjectResult BadRequestModelState()
         {
-            // Получение списка ошибок модели
-            IEnumerable<string> errorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
+            var responseBody = new ErrorResponse<string>
+            (
+                errors: ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))
+            );
 
-            return BadRequest(new ErrorResponseDTO(errorMessages));
+            return BadRequest(responseBody);
+        }
+
+        protected ConflictObjectResult ConflictWithErrorOf<TError>(TError errorMessage)
+        {
+            var responseBody = new ErrorResponse<TError>(errorMessage);
+
+            return Conflict(responseBody);
+        }
+
+        protected BadRequestObjectResult BadRequestWithErrorOf<TError>(TError errorMessage)
+        {
+            var responseBody = new ErrorResponse<TError>(errorMessage);
+
+            return BadRequest(responseBody);
+        }
+
+        protected NotFoundObjectResult NotFoundWithErrorOf<TError>(TError errorMessage)
+        {
+            var responseBody = new ErrorResponse<TError>(errorMessage);
+
+            return NotFound(responseBody);
+        }
+
+        protected UnauthorizedObjectResult UnauthorizedWithErrorOf<TError>(TError errorMessage)
+        {
+            var responseBody = new ErrorResponse<TError>(errorMessage);
+
+            return Unauthorized(responseBody);
         }
     }
 }

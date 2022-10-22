@@ -6,7 +6,6 @@ using Chat.API.Services.UserRepositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Chat.API.DTOs.Responses.TechnicalMessages;
 
 namespace Chat.API.Controllers
 {
@@ -42,7 +41,7 @@ namespace Chat.API.Controllers
             if (user == null)
             {
                 // Если пользователь не найден
-                return NotFound(new ErrorResponseDTO("User not found!"));
+                return NotFoundWithErrorOf<string>("User not found!");
             }
 
             try
@@ -52,9 +51,13 @@ namespace Chat.API.Controllers
 
                 return Ok();
             }
+            catch (NotFoundException ex)
+            {
+                return NotFoundWithErrorOf<string>(ex.Message);
+            }
             catch (ProcessingException ex)
             {
-                return BadRequest(new ErrorResponseDTO(ex.Message));
+                return ConflictWithErrorOf<string>(ex.Message);
             }
         }
 
@@ -72,7 +75,7 @@ namespace Chat.API.Controllers
             if (user == null)
             {
                 // Если пользователь не найден
-                return NotFound(new ErrorResponseDTO("User not found!"));
+                return NotFoundWithErrorOf<string>("User not found!");
             }
 
             try
@@ -81,9 +84,13 @@ namespace Chat.API.Controllers
 
                 return Ok();
             }
-            catch (Exception)
+            catch (NotFoundException ex)
             {
-                return StatusCode(500);
+                return NotFoundWithErrorOf<string>(ex.Message);
+            }
+            catch (ProcessingException ex)
+            {
+                return ConflictWithErrorOf<string>(ex.Message);
             }
         }
 
@@ -101,7 +108,7 @@ namespace Chat.API.Controllers
             if (user == null)
             {
                 // Если пользователь не найден
-                return NotFound(new ErrorResponseDTO("User not found!"));
+                return NotFoundWithErrorOf<string>("User not found!");
             }
 
             try
@@ -110,9 +117,13 @@ namespace Chat.API.Controllers
 
                 return Ok();
             }
-            catch (Exception)
+            catch (NotFoundException ex)
             {
-                return StatusCode(500);
+                return NotFoundWithErrorOf<string>(ex.Message);
+            }
+            catch (ProcessingException ex)
+            {
+                return ConflictWithErrorOf<string>(ex.Message);
             }
         }
     }

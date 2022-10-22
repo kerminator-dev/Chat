@@ -5,7 +5,6 @@ using Chat.API.DTOs.Responses;
 using Chat.API.Services.Providers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Chat.API.DTOs.Responses.TechnicalMessages;
 
 namespace Chat.API.Controllers
 {
@@ -40,7 +39,7 @@ namespace Chat.API.Controllers
             if (user == null)
             {
                 // Если такого пользователя нет
-                return NotFound(new ErrorResponseDTO("User not found"));
+                return NotFoundWithErrorOf<string>("User not found");
             }
 
             try
@@ -50,9 +49,13 @@ namespace Chat.API.Controllers
 
                 return Ok(userDialoguesResponce);
             }
+            catch (NotFoundException ex)
+            {
+                return NotFoundWithErrorOf<string>(ex.Message);
+            }
             catch (ProcessingException ex)
             {
-                return BadRequest(new ErrorResponseDTO(ex.Message));
+                return ConflictWithErrorOf<string>(ex.Message);
             }
         }
 
@@ -75,7 +78,7 @@ namespace Chat.API.Controllers
             if (requester == null)
             {
                 // Если такого пользователя нет
-                return NotFound(new ErrorResponseDTO("User not found"));
+                return NotFoundWithErrorOf<string>("User not found");
             }
 
             // Поиск второго участника диалога
@@ -83,13 +86,13 @@ namespace Chat.API.Controllers
             if (targetUser == null)
             {
                 // Если такого пользователя нет
-                return NotFound(new ErrorResponseDTO("User not found"));
+                return NotFoundWithErrorOf<string>("User not found");
             }
 
             // Если пользователь пытается создать диалог сам с собой
             if (requester.Id == targetUser.Id)
             {
-                return BadRequest(new ErrorResponseDTO("Cannot create dialog with yourself! (may be later)"));
+                return BadRequestWithErrorOf("Cannot create dialog with yourself! (may be later)");
             }
 
             try
@@ -99,9 +102,13 @@ namespace Chat.API.Controllers
 
                 return Ok();
             }
+            catch (NotFoundException ex)
+            {
+                return NotFoundWithErrorOf<string>(ex.Message);
+            }
             catch (ProcessingException ex)
             {
-                return BadRequest(new ErrorResponseDTO(ex.Message));
+                return ConflictWithErrorOf<string>(ex.Message);
             }
         }
 
@@ -110,9 +117,9 @@ namespace Chat.API.Controllers
         /// </summary>
         /// <param name="deleteDialogueRequest">Запрос на удаление диалога</param>
         /// <returns></returns>
-        [HttpDelete("Delete")]
+        [HttpDelete("Delete/{dialogueId}")]
         [Authorize]
-        public async Task<IActionResult> Delete([FromBody] DeleteDialogueRequestDTO deleteDialogueRequest)
+        public async Task<IActionResult> Delete(int dialogueId)
         {
             if (!ModelState.IsValid)
             {
@@ -124,19 +131,23 @@ namespace Chat.API.Controllers
             if (requester == null)
             {
                 // Если такого пользователя нет
-                return NotFound(new ErrorResponseDTO("User not found"));
+                return NotFoundWithErrorOf<string>("User not found");
             }
 
             try
             {
                 // Удаление диалога
-                await _dialogueProvider.Delete(requester, deleteDialogueRequest);
+                await _dialogueProvider.Delete(requester, dialogueId);
 
                 return Ok();
             }
+            catch (NotFoundException ex)
+            {
+                return NotFoundWithErrorOf<string>(ex.Message);
+            }
             catch (ProcessingException ex)
             {
-                return Conflict(new ErrorResponseDTO(ex.Message));
+                return ConflictWithErrorOf<string>(ex.Message);
             }
         }
     }

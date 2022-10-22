@@ -50,7 +50,7 @@ namespace Chat.API.Services.Providers
         {
             // Проверка - существует ли уже указанный диалог
             if (await _dialogueRepository.Any(dialogueMember, dialogueCreator))
-                throw new ProcessingException("Dialog already exist!");
+                throw new ProcessingException("Dialogue already exist!");
 
             // Создание модели диалога для БД
             var dialogue = new Dialogue()
@@ -81,12 +81,12 @@ namespace Chat.API.Services.Providers
             await _messagingService.SendCreatedDialogue(dialogueMember, createdDialogueDTO);
         }
 
-        public async Task Delete(User user, DeleteDialogueRequestDTO deleteDialogueRequest)
+        public async Task Delete(User user, int dialogueId)
         {
             // Поиск нужного диалога в списке диалогов пользователя
-            var dialogueToDelete = await _dialogueRepository.Get(user, deleteDialogueRequest.DialogueId);
+            var dialogueToDelete = await _dialogueRepository.Get(user, dialogueId);
             if (dialogueToDelete == null) // Если такого диалога нет
-                throw new ProcessingException("Dialogue not found!");
+                throw new NotFoundException("Dialogue not found!");
 
             // Получение id второго участника диалога
             var dialogueMemberId = DialogueHelper.GetSecondDialogueMemberId(dialogueToDelete, user.Id);
@@ -97,7 +97,7 @@ namespace Chat.API.Services.Providers
             // Модель для оповещения участников
             var deletedDialogue = new DeletedDialogueDTO()
             {
-                Id = deleteDialogueRequest.DialogueId,
+                Id = dialogueId,
                 InitiatorId = user.Id
             };
 

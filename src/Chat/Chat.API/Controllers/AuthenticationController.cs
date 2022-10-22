@@ -6,7 +6,6 @@ using Chat.API.Services.PasswordHashers;
 using Chat.API.Services.Providers;
 using Chat.API.Services.RefreshTokenRepositories;
 using Microsoft.AspNetCore.Mvc;
-using Chat.API.DTOs.Responses.TechnicalMessages;
 
 namespace Chat.API.Controllers
 {
@@ -43,7 +42,7 @@ namespace Chat.API.Controllers
             if (existingUserByUsername != null)
             {
                 // Если пользователь с таким username уже существует
-                return Conflict(new ErrorResponseDTO("Username already exists."));
+                return BadRequestWithErrorOf<string>("Username already exists.");
             }
 
             try
@@ -51,9 +50,13 @@ namespace Chat.API.Controllers
                 // Регистрация пользователя
                 await _authenticationProvider.RegisterUser(registerRequest);
             }
+            catch (NotFoundException ex)
+            {
+                return NotFoundWithErrorOf<string>(ex.Message);
+            }
             catch (ProcessingException ex)
             {
-                return Conflict(new ErrorResponseDTO(ex.Message));
+                return ConflictWithErrorOf<string>(ex.Message);
             }
 
             return Ok();
@@ -78,7 +81,7 @@ namespace Chat.API.Controllers
             if (user == null)
             {
                 // Если такого пользователя не существует
-                return Unauthorized();
+                return UnauthorizedWithErrorOf<string>("Wrong username or password");
             }
 
             // Проверка пароля
@@ -86,7 +89,7 @@ namespace Chat.API.Controllers
             if (!isCorrectPassword)
             {
                 // Если пароль неверный
-                return Unauthorized();
+                return UnauthorizedWithErrorOf<string>("Wrong username or password");
             }
 
             try
@@ -96,9 +99,13 @@ namespace Chat.API.Controllers
 
                 return Ok(response);
             }
+            catch (NotFoundException ex)
+            {
+                return NotFoundWithErrorOf<string>(ex.Message);
+            }
             catch (ProcessingException ex)
             {
-                return Conflict(new ErrorResponseDTO(ex.Message));
+                return ConflictWithErrorOf<string>(ex.Message);
             }
         }
 
@@ -120,7 +127,7 @@ namespace Chat.API.Controllers
             if (!isValidRefreshToken)
             {
                 // Если токен неверный
-                return BadRequest(new ErrorResponseDTO("Invalid refresh token"));
+                return BadRequestWithErrorOf<string>("Invalid refresh token");
             }
 
             // Поиск токена в БД
@@ -128,7 +135,7 @@ namespace Chat.API.Controllers
             if (token == null)
             {
                 // Если токен не найден
-                return BadRequest(new ErrorResponseDTO("Invalid refresh token"));
+                return BadRequestWithErrorOf<string>("Invalid refresh token");
             }
 
             // Удаление старого токена из БД
@@ -139,7 +146,7 @@ namespace Chat.API.Controllers
             if (user == null)
             {
                 // Если пользователь не найден
-                return NotFound(new ErrorResponseDTO("User not found"));
+                return NotFoundWithErrorOf<string>("User not found");
             }
 
             try
@@ -149,9 +156,13 @@ namespace Chat.API.Controllers
 
                 return Ok(response);
             }
+            catch (NotFoundException ex)
+            {
+                return NotFoundWithErrorOf<string>(ex.Message);
+            }
             catch (ProcessingException ex)
             {
-                return Conflict(new ErrorResponseDTO(ex.Message));
+                return ConflictWithErrorOf<string>(ex.Message);
             }
         }
     }

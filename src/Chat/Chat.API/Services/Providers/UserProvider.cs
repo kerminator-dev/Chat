@@ -30,7 +30,7 @@ namespace Chat.API.Services.Providers
             var foundUsers = await _userRepository.Search(searchUserRequest.Username);
             if (foundUsers == null || !foundUsers.Any())
             {
-                throw new ProcessingException("Users not found!");
+                throw new NotFoundException("Users not found!");
             }
 
             // Возврат результата
@@ -56,7 +56,7 @@ namespace Chat.API.Services.Providers
             // Получение списка пользователей
             var users = await _userRepository.Get(userIds);
             if (users == null || !users.Any())
-                throw new ProcessingException("Users not found!");
+                throw new NotFoundException("Users not found!");
 
             // Преобразование в DTO и возврат
             return new GetUsersResponseDTO()
@@ -111,7 +111,7 @@ namespace Chat.API.Services.Providers
         /// </summary>
         /// <param name="users">Коллекция пользователей</param>
         /// <returns>Коллекия пользователей DTO</returns>
-        private static ICollection<UserDTO> ToUserDTOs(ICollection<User> users)
+        protected static ICollection<UserDTO> ToUserDTOs(ICollection<User> users)
         {
             var result = new List<UserDTO>();
 

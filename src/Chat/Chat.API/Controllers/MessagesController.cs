@@ -4,7 +4,6 @@ using Chat.API.DTOs.Requests;
 using Chat.API.DTOs.Responses;
 using Chat.API.Services.Providers;
 using Chat.API.Exceptions;
-using Chat.API.DTOs.Responses.TechnicalMessages;
 
 namespace Chat.API.Controllers
 {
@@ -41,7 +40,7 @@ namespace Chat.API.Controllers
             if (messageSender == null)
             {
                 // Если пользователь не найден
-                return NotFound(new ErrorResponseDTO("User not found!"));
+                return NotFoundWithErrorOf<string>("User not found!");
             }
 
             try
@@ -49,11 +48,14 @@ namespace Chat.API.Controllers
                 // Отправка сообщения
                 await _messageProvider.SendMessage(messageSender, message);
             }
+            catch (NotFoundException ex)
+            {
+                return NotFoundWithErrorOf<string>(ex.Message);
+            }
             catch (ProcessingException ex)
             {
-                return BadRequest(new ErrorResponseDTO(ex.Message));
+                return ConflictWithErrorOf<string>(ex.Message);
             }
-            catch (Exception) { }
 
             return Ok();
         }
@@ -77,7 +79,7 @@ namespace Chat.API.Controllers
             if (user == null)
             {
                 // Если пользователь не найден
-                return NotFound(new ErrorResponseDTO("User not found!"));
+                return NotFoundWithErrorOf<string>("User not found!");
             }
 
             try
@@ -87,9 +89,13 @@ namespace Chat.API.Controllers
 
                 return Ok(messagesResponse);
             }
+            catch (NotFoundException ex)
+            {
+                return NotFoundWithErrorOf<string>(ex.Message);
+            }
             catch (ProcessingException ex)
             {
-                return BadRequest(new ErrorResponseDTO(ex.Message));
+                return ConflictWithErrorOf<string>(ex.Message);
             }
         }
 
@@ -112,7 +118,7 @@ namespace Chat.API.Controllers
             if (user == null)
             {
                 // Если пользователь не найден
-                return NotFound(new ErrorResponseDTO("User not found!"));
+                return NotFoundWithErrorOf<string>("User not found!");
             }
 
             try
@@ -122,9 +128,13 @@ namespace Chat.API.Controllers
 
                 return Ok();
             }
+            catch (NotFoundException ex)
+            {
+                return NotFoundWithErrorOf<string>(ex.Message);
+            }
             catch (ProcessingException ex)
             {
-                return BadRequest(new ErrorResponseDTO(ex.Message));
+                return ConflictWithErrorOf<string>(ex.Message);
             }
         }
 
@@ -147,7 +157,7 @@ namespace Chat.API.Controllers
             if (user == null)
             {
                 // Если пользователь не найден
-                return NotFound(new ErrorResponseDTO("User not found!"));
+                return NotFoundWithErrorOf<string>("User not found!");
             }
 
             try
@@ -157,9 +167,13 @@ namespace Chat.API.Controllers
 
                 return Ok();
             }
+            catch (NotFoundException ex)
+            {
+                return NotFoundWithErrorOf<string>(ex.Message);
+            }
             catch (ProcessingException ex)
             {
-                return BadRequest(new ErrorResponseDTO(ex.Message));
+                return ConflictWithErrorOf<string>(ex.Message);
             }
         }
     }

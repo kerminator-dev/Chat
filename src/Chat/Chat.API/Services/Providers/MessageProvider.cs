@@ -43,12 +43,12 @@ namespace Chat.API.Services.Providers
             // Получние диалога
             var dialogue = await _dialogueRepository.Get(sender, sendMessageRequest.DialogueId);
             if (dialogue == null)
-                throw new ProcessingException("Dialogue not found!");
+                throw new NotFoundException("Dialogue not found!");
 
             // Определение получателя сообщения/второго участника диалога
             var receiver = await _userRepository.Get(DialogueHelper.GetSecondDialogueMemberId(dialogue, sender.Id));
             if (receiver == null)
-                throw new ProcessingException("Receiver not found!");
+                throw new NotFoundException("Receiver not found!");
 
             // Инициализация модели DialogueMessage для записи в БД и оповещения обоих участников диалога
             var message = new DialogueMessage()
@@ -76,7 +76,7 @@ namespace Chat.API.Services.Providers
             // Получение диалога
             var dialogue = await _dialogueRepository.Get(user, getMessagesRequest.DialogueId);
             if (dialogue == null)
-                throw new ProcessingException("Dialogue not found!");
+                throw new NotFoundException("Dialogue not found!");
 
             // Получение списка сообщений диалога
             var messages = await _messageRepository.Get(dialogue, getMessagesRequest.Count, getMessagesRequest.Offset);
@@ -96,17 +96,17 @@ namespace Chat.API.Services.Providers
             // Получение диалога
             var dialogue = await _dialogueRepository.Get(sender, deleteMessagesRequest.DialogueId);
             if (dialogue == null)
-                throw new ProcessingException("Dialogue not found!");
+                throw new NotFoundException("Dialogue not found!");
 
             // Получение второго участника диалога
             var receiver = await _userRepository.Get(DialogueHelper.GetSecondDialogueMemberId(dialogue, sender.Id));
             if (receiver == null)
-                throw new ProcessingException("Receiver not found!");
+                throw new NotFoundException("Receiver not found!");
 
             // Получение сообщений удаляемого диалога из БД
             var messagesToDelete = await _messageRepository.Get(dialogue.Id, deleteMessagesRequest.MessageIds);
             if (messagesToDelete == null || !messagesToDelete.Any())
-                throw new ProcessingException("Message not found!");
+                throw new NotFoundException("Message not found!");
 
             // Удаление сообщений из БД
             await _messageRepository.Delete(messagesToDelete);
@@ -133,17 +133,17 @@ namespace Chat.API.Services.Providers
             // Получение сообщения
             var message = await _messageRepository.Get(updateMessageRequest.DialogueId, updateMessageRequest.MessageId);
             if (message == null)
-                throw new ProcessingException("Message not found!");
+                throw new NotFoundException("Message not found!");
 
             // Получение диалога
             var dialogue = await _dialogueRepository.Get(sender, updateMessageRequest.DialogueId);
             if (dialogue == null)
-                throw new ProcessingException("Dialogue not found!");
+                throw new NotFoundException("Dialogue not found!");
 
             // Получение получателя/второго участника диалога
             var receiver = await _userRepository.Get(DialogueHelper.GetSecondDialogueMemberId(dialogue, sender.Id));
             if (receiver == null)
-                throw new ProcessingException("Receiver not found!");
+                throw new NotFoundException("Receiver not found!");
 
             // Изменение контента сообщения
             message.Content = updateMessageRequest.Content;
