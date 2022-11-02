@@ -2,8 +2,9 @@
 using Chat.API.Entities;
 using Microsoft.AspNetCore.SignalR;
 using Chat.API.DTOs;
+using Chat.API.Services.Interfaces;
 
-namespace Chat.API.Services.MessagingServices
+namespace Chat.API.Services.Implementation
 {
     public class SignalRMessagingService : IMessagingService
     {
@@ -22,7 +23,7 @@ namespace Chat.API.Services.MessagingServices
         /// <returns></returns>
         public async Task SendMessage(User receiver, DialogueMessage newMessage)
         {
-            await this.Send<DialogueMessage>(receiver, "ReceiveMessage", newMessage);
+            await Send(receiver, "ReceiveMessage", newMessage);
         }
 
         /// <summary>
@@ -33,7 +34,7 @@ namespace Chat.API.Services.MessagingServices
         /// <returns></returns>
         public async Task SendDeletedMessage(User receiver, DeletedMessagesDTO deletedMessage)
         {
-            await this.Send<DeletedMessagesDTO>(receiver, "DeleteMessage", deletedMessage);
+            await Send(receiver, "DeleteMessage", deletedMessage);
         }
 
         /// <summary>
@@ -44,7 +45,7 @@ namespace Chat.API.Services.MessagingServices
         /// <returns></returns>
         public async Task SendUpdatedMessage(User receiver, UpdatedMessageDTO updatedMessage)
         {
-            await this.Send<UpdatedMessageDTO>(receiver, "UpdateMessage", updatedMessage);
+            await Send(receiver, "UpdateMessage", updatedMessage);
         }
 
         /// <summary>
@@ -55,7 +56,7 @@ namespace Chat.API.Services.MessagingServices
         /// <returns></returns>
         public async Task SendCreatedDialogue(User receiver, CreatedDialogueDTO newDialogue)
         {
-            await this.Send<CreatedDialogueDTO>(receiver, "CreateDialogue", newDialogue);
+            await Send(receiver, "CreateDialogue", newDialogue);
         }
 
         /// <summary>
@@ -66,7 +67,7 @@ namespace Chat.API.Services.MessagingServices
         /// <returns></returns>
         public async Task SendDeletedDialogue(User receiver, DeletedDialogueDTO deletedDialogue)
         {
-            await this.Send<DeletedDialogueDTO>(receiver, "DeleteDialogue", deletedDialogue);
+            await Send(receiver, "DeleteDialogue", deletedDialogue);
         }
 
 
@@ -78,7 +79,7 @@ namespace Chat.API.Services.MessagingServices
         /// <param name="methodName">Название метода-события на стороне получателя</param>
         /// <param name="objectToSend">Отправляемый объект</param>
         /// <returns></returns>
-        protected async Task Send<T>(User receiver, string methodName, T objectToSend)
+        protected async Task Send<TMessage>(User receiver, string methodName, TMessage objectToSend)
         {
             if (receiver.HubConnections is null)
                 return;

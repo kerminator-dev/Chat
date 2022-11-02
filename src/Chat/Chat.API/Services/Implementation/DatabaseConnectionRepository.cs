@@ -1,8 +1,9 @@
 ﻿using Chat.API.DbContexts;
 using Chat.API.Entities;
+using Chat.API.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Chat.API.Services.ConnectionRepositories
+namespace Chat.API.Services.Implementation
 {
     public class DatabaseConnectionRepository : IConnectionRepository
     {
@@ -13,13 +14,10 @@ namespace Chat.API.Services.ConnectionRepositories
             _dbContext = dbContext;
         }
 
-        public async Task Add(User user, HubConnection connection)
+        public async Task Add(HubConnection connection)
         {
-            // Подгрузка подключений пользователя из БД, если их нет
-            if (user.HubConnections == null)
-                await this.LoadConnections(user);
 
-            user.HubConnections?.Add(connection);
+            await _dbContext.Connections.AddAsync(connection);
 
             await _dbContext.SaveChangesAsync();
         }
@@ -29,19 +27,9 @@ namespace Chat.API.Services.ConnectionRepositories
             return await _dbContext.Connections.FindAsync(connectionId);
         }
 
-        public async Task<ICollection<HubConnection>> GetUserConnections(int userId)
+        public async Task<ICollection<HubConnection>> Get(int userId)
         {
             return await _dbContext.Connections.Where(c => c.UserId == userId).ToListAsync();
-        }
-
-        public async Task<User> LoadConnections(User user)
-        {
-            if (user == null)
-                return user;
-
-            await _dbContext.Entry(user).Collection(u => u.HubConnections).LoadAsync();
-
-            return user;
         }
 
         public async Task SetConnectionStatus(HubConnection hubConnection, bool isActiveStatus)

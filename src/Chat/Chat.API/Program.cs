@@ -1,19 +1,14 @@
 using Chat.API.Extensions;
 using Chat.API.Hubs;
-using Chat.API.Services.ConnectionRepositories;
-using Chat.API.Services.DialogueRepositories;
-using Chat.API.Services.MessageRepositories;
-using Chat.API.Services.MessagingServices;
-using Chat.API.Services.PasswordHashers;
+using Chat.API.Services.Implementation;
+using Chat.API.Services.Interfaces;
 using Chat.API.Services.Providers;
-using Chat.API.Services.RefreshTokenRepositories;
 using Chat.API.Services.TokenGenerators;
-using Chat.API.Services.TokenValidators;
-using Chat.API.Services.UserRepositories;
 using Microsoft.AspNetCore.Http.Connections;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -40,13 +35,19 @@ builder.Services.AddScoped<UserProvider>();
 
 var app = builder.Build();
 
-// if (app.Environment.IsDevelopment())
-//{
+app.UseCors(builder =>
+{
+    builder.AllowAnyHeader()
+           .AllowAnyMethod()
+           .AllowAnyOrigin();
+});
+
+if (app.Environment.IsDevelopment())
+{
     app.UseSwagger();
     app.UseSwaggerUI();
-//}
+}
 
-//app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

@@ -1,14 +1,11 @@
-﻿using Chat.API.Entities;
-using Chat.API.Models;
-using Chat.API.DTOs.Requests;
+﻿using Chat.API.DTOs.Requests;
 using Chat.API.DTOs.Responses;
-using Chat.API.Services.PasswordHashers;
-using Chat.API.Services.RefreshTokenRepositories;
+using Chat.API.Entities;
+using Chat.API.Models;
+using Chat.API.Services.Implementation;
+using Chat.API.Services.Interfaces;
 using Chat.API.Services.TokenGenerators;
-using Chat.API.Services.TokenValidators;
-using Chat.API.Services.UserRepositories;
 using System.Security.Claims;
-using ErrorOr;
 
 namespace Chat.API.Services.Providers
 {

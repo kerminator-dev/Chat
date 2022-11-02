@@ -1,14 +1,10 @@
 ﻿using Chat.API.DTOs;
+using Chat.API.DTOs.Requests;
+using Chat.API.DTOs.Responses;
 using Chat.API.Entities;
 using Chat.API.Exceptions;
 using Chat.API.Helpers;
-using Chat.API.DTOs.Requests;
-using Chat.API.DTOs.Responses;
-using Chat.API.Services.ConnectionRepositories;
-using Chat.API.Services.DialogueRepositories;
-using Chat.API.Services.MessageRepositories;
-using Chat.API.Services.MessagingServices;
-using Chat.API.Services.UserRepositories;
+using Chat.API.Services.Interfaces;
 
 namespace Chat.API.Services.Providers
 {
@@ -22,7 +18,11 @@ namespace Chat.API.Services.Providers
         private readonly IDialogueRepository _dialogueRepository;
         private readonly IConnectionRepository _connectionRepository;
 
-        public MessageProvider(IMessageRepository messageRepository, IMessagingService messagingService, IUserRepository userRepository, IDialogueRepository dialogueRepository, IConnectionRepository connectionRepository)
+        public MessageProvider(IMessageRepository messageRepository, 
+                               IMessagingService messagingService, 
+                               IUserRepository userRepository,
+                               IDialogueRepository dialogueRepository, 
+                               IConnectionRepository connectionRepository)
         {
             _messageRepository = messageRepository;
             _messagingService = messagingService;
@@ -41,7 +41,7 @@ namespace Chat.API.Services.Providers
         public async Task SendMessage(User sender, SendMessageRequestDTO sendMessageRequest)
         {
             // Получние диалога
-            var dialogue = await _dialogueRepository.Get(sender, sendMessageRequest.DialogueId);
+            var dialogue = await _dialogueRepository.Get(sender.Id, sendMessageRequest.DialogueId);
             if (dialogue == null)
                 throw new NotFoundException("Dialogue not found!");
 
@@ -60,26 +60,27 @@ namespace Chat.API.Services.Providers
             };
 
             // Запись сообщения в БД
-            await _dialogueRepository.AddMessage(dialogue, message);
+            // await _dialogueRepository.AddMessage(dialogue, message);
+            await _messageRepository.Add(message);
 
             // Подгрузка подключений пользователя и отправка сообщения получателю
-            await _connectionRepository.LoadConnections(receiver);
+            receiver.HubConnections = await _connectionRepository.Get(receiver.Id);
             await _messagingService.SendMessage(receiver, message);
 
             // Подгрузка подключений пользователя и отправка сообщения отправителю
-            await _connectionRepository.LoadConnections(sender);
+            sender.HubConnections = await _connectionRepository.Get(sender.Id);
             await _messagingService.SendMessage(sender, message);
         }
 
         public async Task<GetMessagesResponseDTO> GetMessages(User user, GetMessagesRequestDTO getMessagesRequest)
         {
             // Получение диалога
-            var dialogue = await _dialogueRepository.Get(user, getMessagesRequest.DialogueId);
+            var dialogue = await _dialogueRepository.Get(user.Id, getMessagesRequest.DialogueId);
             if (dialogue == null)
                 throw new NotFoundException("Dialogue not found!");
 
             // Получение списка сообщений диалога
-            var messages = await _messageRepository.Get(dialogue, getMessagesRequest.Count, getMessagesRequest.Offset);
+            var messages = await _messageRepository.Get(dialogue.Id, getMessagesRequest.Count, getMessagesRequest.Offset);
             // if (messages == null || !messages.Any())
             //     throw new ProcessingException("No messages!");
 
@@ -94,7 +95,7 @@ namespace Chat.API.Services.Providers
         public async Task DeleteMessages(User sender, DeleteMessagesRequestDTO deleteMessagesRequest)
         {
             // Получение диалога
-            var dialogue = await _dialogueRepository.Get(sender, deleteMessagesRequest.DialogueId);
+            var dialogue = await _dialogueRepository.Get(sender.Id, deleteMessagesRequest.DialogueId);
             if (dialogue == null)
                 throw new NotFoundException("Dialogue not found!");
 
@@ -120,11 +121,11 @@ namespace Chat.API.Services.Providers
             };
 
             // Подгрузка подключений пользователя и отправка уведомления о удалении первому участнику диалога
-            await _connectionRepository.LoadConnections(sender);
+            sender.HubConnections = await _connectionRepository.Get(sender.Id);
             await _messagingService.SendDeletedMessage(sender, deletedMessage);
 
             // Подгрузка подключений пользователя и отправка уведомления о удалении второму участнику диалога
-            await _connectionRepository.LoadConnections(receiver);
+            receiver.HubConnections = await _connectionRepository.Get(receiver.Id);
             await _messagingService.SendDeletedMessage(receiver, deletedMessage);
         }
 
@@ -136,7 +137,7 @@ namespace Chat.API.Services.Providers
                 throw new NotFoundException("Message not found!");
 
             // Получение диалога
-            var dialogue = await _dialogueRepository.Get(sender, updateMessageRequest.DialogueId);
+            var dialogue = await _dialogueRepository.Get(sender.Id, updateMessageRequest.DialogueId);
             if (dialogue == null)
                 throw new NotFoundException("Dialogue not found!");
 
@@ -158,11 +159,11 @@ namespace Chat.API.Services.Providers
             };
 
             // Подгрузка подключений пользователя и отправка уведомления о обновлении сообщения первому участнику диалога
-            await _connectionRepository.LoadConnections(sender);
+            sender.HubConnections = await _connectionRepository.Get(sender.Id);
             await _messagingService.SendUpdatedMessage(sender, updatedMessageDTO);
 
             // Подгрузка подключений пользователя и отправка уведомления о обновлении сообщения второму участнику диалога
-            await _connectionRepository.LoadConnections(receiver);
+            receiver.HubConnections = await _connectionRepository.Get(receiver.Id);
             await _messagingService.SendUpdatedMessage(receiver, updatedMessageDTO);
         }
 

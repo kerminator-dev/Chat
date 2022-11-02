@@ -1,4 +1,6 @@
-﻿namespace Chat.API.Services.PasswordHashers
+﻿using Chat.API.Services.Interfaces;
+
+namespace Chat.API.Services.Implementation
 {
     public class BCryptPasswordHasher : IPasswordHasher
     {

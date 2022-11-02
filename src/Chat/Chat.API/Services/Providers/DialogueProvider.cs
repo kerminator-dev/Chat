@@ -1,13 +1,9 @@
 ﻿using Chat.API.DTOs;
+using Chat.API.DTOs.Responses;
 using Chat.API.Entities;
 using Chat.API.Exceptions;
 using Chat.API.Helpers;
-using Chat.API.DTOs.Requests;
-using Chat.API.DTOs.Responses;
-using Chat.API.Services.ConnectionRepositories;
-using Chat.API.Services.DialogueRepositories;
-using Chat.API.Services.MessagingServices;
-using Chat.API.Services.UserRepositories;
+using Chat.API.Services.Interfaces;
 
 namespace Chat.API.Services.Providers
 {
@@ -29,7 +25,7 @@ namespace Chat.API.Services.Providers
         public async Task<GetDialoguesResponseDTO> GetAll(User user)
         {           
             // Получение списка диалогов пользователя с последними сообщениями
-            var dialoguesWithLastMessages = await _dialogueRepository.GetDialoguesWithLastMessages(user);
+            var dialoguesWithLastMessages = await _dialogueRepository.GetDialoguesWithLastMessages(user.Id);
             // if (dialoguesWithLastMessages == null || dialoguesWithLastMessages.Count == 0)
             //     throw new ProcessingException("Dialogues not found!");
 
@@ -49,7 +45,7 @@ namespace Chat.API.Services.Providers
         public async Task Create(User dialogueCreator, User dialogueMember)
         {
             // Проверка - существует ли уже указанный диалог
-            if (await _dialogueRepository.Any(dialogueMember, dialogueCreator))
+            if (await _dialogueRepository.Any(dialogueMember.Id, dialogueCreator.Id))
                 throw new ProcessingException("Dialogue already exist!");
 
             // Создание модели диалога для БД
@@ -73,18 +69,18 @@ namespace Chat.API.Services.Providers
             };
 
             // Подгрузка существующих хаб-подключений пользователя и уведомление участника диалога о создании диалога
-            await _connectionRepository.LoadConnections(dialogueCreator);
+            dialogueCreator.HubConnections = await _connectionRepository.Get(dialogueCreator.Id);
             await _messagingService.SendCreatedDialogue(dialogueCreator, createdDialogueDTO);
 
             // Подгрузка существующих хаб-подключений пользователя и уведомление участника диалога о создании диалога
-            await _connectionRepository.LoadConnections(dialogueMember);
+            dialogueMember.HubConnections = await _connectionRepository.Get(dialogueMember.Id);
             await _messagingService.SendCreatedDialogue(dialogueMember, createdDialogueDTO);
         }
 
         public async Task Delete(User user, int dialogueId)
         {
             // Поиск нужного диалога в списке диалогов пользователя
-            var dialogueToDelete = await _dialogueRepository.Get(user, dialogueId);
+            var dialogueToDelete = await _dialogueRepository.Get(user.Id, dialogueId);
             if (dialogueToDelete == null) // Если такого диалога нет
                 throw new NotFoundException("Dialogue not found!");
 
@@ -107,13 +103,13 @@ namespace Chat.API.Services.Providers
             if (dialogueMember != null)
             {
                 // Подгрузка существующих хаб-подключений пользователя и уведомление участника диалога о удалении
-                 await _connectionRepository.LoadConnections(dialogueMember);
+                 dialogueMember.HubConnections = await _connectionRepository.Get(dialogueMember.Id);
                  await _messagingService.SendDeletedDialogue(dialogueMember, deletedDialogue);
             }
 
             // Подгрузка существующих хаб-подключений пользователя и уведомление участника диалога о удалении
-             await _connectionRepository.LoadConnections(user);
-             await _messagingService.SendDeletedDialogue(user, deletedDialogue);
+            user.HubConnections = await _connectionRepository.Get(user.Id);
+            await _messagingService.SendDeletedDialogue(user, deletedDialogue);
         }
 
         private static ICollection<DialogueWithLastMessageDTO>? ToDialogMessageDTOs(ICollection<Dialogue> dialogues)

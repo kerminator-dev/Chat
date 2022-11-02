@@ -1,6 +1,7 @@
 ﻿using Chat.API.Entities;
+using Chat.API.Services.Interfaces;
 
-namespace Chat.API.Services.RefreshTokenRepositories
+namespace Chat.API.Services.Implementation
 {
     /// <summary>
     /// Для теста без БД

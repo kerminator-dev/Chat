@@ -1,6 +1,6 @@
 ﻿using Chat.API.Entities;
 
-namespace Chat.API.Services.MessageRepositories
+namespace Chat.API.Services.Interfaces
 {
     public interface IMessageRepository
     {
@@ -14,7 +14,7 @@ namespace Chat.API.Services.MessageRepositories
 
         Task<ICollection<DialogueMessage>> Get(int dialogueId, ICollection<int> MessageIDs);
 
-        Task<ICollection<DialogueMessage>> Get(Dialogue dialogue, int count, int offset);
+        Task<ICollection<DialogueMessage>> Get(int dialogueId, int count, int offset);
 
         Task Update(DialogueMessage message);
     }

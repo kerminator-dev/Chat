@@ -1,6 +1,6 @@
 ﻿using Chat.API.Entities;
 
-namespace Chat.API.Services.RefreshTokenRepositories
+namespace Chat.API.Services.Interfaces
 {
     public interface IRefreshTokenRepository
     {

@@ -1,9 +1,9 @@
 ﻿using Chat.API.DbContexts;
-using Chat.API.DTOs;
 using Chat.API.Entities;
+using Chat.API.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Chat.API.Services.DialogueRepositories
+namespace Chat.API.Services.Implementation
 {
     public class DatabaseDialogueRepository : IDialogueRepository
     {
@@ -23,10 +23,10 @@ namespace Chat.API.Services.DialogueRepositories
             return result.Entity;
         }
 
-        public async Task<ICollection<Dialogue>> GetAll(User user)
+        public async Task<ICollection<Dialogue>> GetAll(int userId)
         {
             return await _dbContext.Dialogues
-                .Where(d => d.CreatorId == user.Id || d.MemberId == user.Id)
+                .Where(d => d.CreatorId == userId || d.MemberId == userId)
                 .ToListAsync();
         }
 
@@ -37,33 +37,33 @@ namespace Chat.API.Services.DialogueRepositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task AddMessage(Dialogue dialogue, DialogueMessage message)
-        {
-            await _dbContext.Messages.AddAsync(message);
+        //public async Task AddMessage(Dialogue dialogue, DialogueMessage message)
+        //{
+        //    await _dbContext.Messages.AddAsync(message);
 
-            await _dbContext.SaveChangesAsync();
-        }
+        //    await _dbContext.SaveChangesAsync();
+        //}
 
-        public async Task<Dialogue> Get(User user, int dialogueId)
+        public async Task<Dialogue> Get(int userId, int dialogueId)
         {
             return await _dbContext
                         .Dialogues
-                        .FirstOrDefaultAsync(d => d.Id == dialogueId && (d.MemberId == user.Id || d.CreatorId == user.Id));
+                        .FirstOrDefaultAsync(d => d.Id == dialogueId && (d.MemberId == userId || d.CreatorId == userId));
         }
 
-        public async Task<bool> Any(User user1, User user2)
+        public async Task<bool> Any(int userId1, int userId2)
         {
             return await _dbContext
                     .Dialogues
-                    .AnyAsync(d => 
-                        (d.CreatorId == user1.Id && d.MemberId == user2.Id) || 
-                        (d.MemberId == user1.Id && d.CreatorId == user2.Id));
+                    .AnyAsync(d =>
+                        d.CreatorId == userId1 && d.MemberId == userId2 ||
+                        d.MemberId == userId1 && d.CreatorId == userId2);
         }
 
-        public async Task<ICollection<Dialogue>> GetDialoguesWithLastMessages(User user)
+        public async Task<ICollection<Dialogue>> GetDialoguesWithLastMessages(int userId)
         {
             return await _dbContext.Dialogues
-                         .Where(d => d.CreatorId == user.Id || d.MemberId == user.Id)
+                         .Where(d => d.CreatorId == userId || d.MemberId == userId)
                          .Include(d => d.Messages.OrderByDescending(m => m.Id).Take(1))
                          .ToListAsync();
         }

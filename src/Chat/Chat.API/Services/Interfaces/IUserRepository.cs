@@ -1,11 +1,11 @@
 ﻿using Chat.API.Entities;
 
-namespace Chat.API.Services.UserRepositories
+namespace Chat.API.Services.Interfaces
 {
     public interface IUserRepository
     {
         Task<User> Get(int userId);
-        
+
         Task<User> Get(string username);
 
         Task<ICollection<User>> Get(ICollection<int> userIds);

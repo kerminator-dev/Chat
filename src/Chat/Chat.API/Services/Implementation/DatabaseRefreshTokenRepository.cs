@@ -1,8 +1,9 @@
 ﻿using Chat.API.DbContexts;
 using Chat.API.Entities;
+using Chat.API.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Chat.API.Services.RefreshTokenRepositories
+namespace Chat.API.Services.Implementation
 {
     public class DatabaseRefreshTokenRepository : IRefreshTokenRepository
     {
@@ -15,7 +16,7 @@ namespace Chat.API.Services.RefreshTokenRepositories
 
         public async Task ClearCache()
         {
-            var tokensToDelete = await _dbContext.RefreshTokens.Where(t => t.ExpirationDateTime < DateTime.Now).ToListAsync();
+            var tokensToDelete = await _dbContext.RefreshTokens.Where(t => t.ExpirationDateTime < DateTime.UtcNow).ToListAsync();
 
             if (tokensToDelete != null)
             {

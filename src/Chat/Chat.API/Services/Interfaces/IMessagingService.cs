@@ -1,7 +1,7 @@
 ﻿using Chat.API.DTOs;
 using Chat.API.Entities;
 
-namespace Chat.API.Services.MessagingServices
+namespace Chat.API.Services.Interfaces
 {
     public interface IMessagingService
     {

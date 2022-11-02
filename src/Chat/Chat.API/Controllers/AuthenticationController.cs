@@ -1,10 +1,9 @@
-﻿using Chat.API.Entities;
-using Chat.API.Exceptions;
-using Chat.API.DTOs.Requests;
+﻿using Chat.API.DTOs.Requests;
 using Chat.API.DTOs.Responses;
-using Chat.API.Services.PasswordHashers;
+using Chat.API.Entities;
+using Chat.API.Exceptions;
+using Chat.API.Services.Interfaces;
 using Chat.API.Services.Providers;
-using Chat.API.Services.RefreshTokenRepositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chat.API.Controllers

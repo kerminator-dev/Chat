@@ -1,5 +1,5 @@
 ﻿using Chat.API.Entities;
-using Chat.API.Services.ConnectionRepositories;
+using Chat.API.Services.Interfaces;
 using Chat.API.Services.Providers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -33,7 +33,7 @@ namespace Chat.API.Hubs
                 return;
 
             // Подгрузка подключений пользователя
-            await _connectionRepository.LoadConnections(user);
+            user.HubConnections = await _connectionRepository.Get(user.Id);
 
             // Получение User-Agent'а пользователя
             string userAgent = Context.GetHttpContext()?
@@ -51,7 +51,7 @@ namespace Chat.API.Hubs
             };
 
             // Добавление текущего подключения в базу данных
-            await _connectionRepository.Add(user, connection);
+            await _connectionRepository.Add(connection);
 
             await base.OnConnectedAsync();
         }

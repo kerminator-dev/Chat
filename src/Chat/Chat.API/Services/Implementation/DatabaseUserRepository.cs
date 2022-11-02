@@ -1,8 +1,9 @@
 ﻿using Chat.API.DbContexts;
 using Chat.API.Entities;
+using Chat.API.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Chat.API.Services.UserRepositories
+namespace Chat.API.Services.Implementation
 {
     public class DatabaseUserRepository : IUserRepository
     {
@@ -26,7 +27,7 @@ namespace Chat.API.Services.UserRepositories
 
             await _dbContext.SaveChangesAsync();
 
-            return user; 
+            return user;
         }
 
         /// <summary>

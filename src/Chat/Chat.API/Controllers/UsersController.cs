@@ -1,9 +1,7 @@
-﻿using Chat.API.Exceptions;
-using Chat.API.DTOs.Requests;
-using Chat.API.DTOs.Responses;
+﻿using Chat.API.DTOs.Requests;
+using Chat.API.Exceptions;
 using Chat.API.Services.Providers;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chat.API.Controllers

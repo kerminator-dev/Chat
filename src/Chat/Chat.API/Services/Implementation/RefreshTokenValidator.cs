@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
-namespace Chat.API.Services.TokenValidators
+namespace Chat.API.Services.Implementation
 {
     public class RefreshTokenValidator
     {
@@ -17,7 +17,7 @@ namespace Chat.API.Services.TokenValidators
 
         public bool Validate(string refreshToken)
         {
-            TokenValidationParameters validationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
+            TokenValidationParameters validationParameters = new TokenValidationParameters()
             {
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationConfiguration.RefreshTokenSecret)),
                 ValidIssuer = _authenticationConfiguration.Issuer,
@@ -36,7 +36,7 @@ namespace Chat.API.Services.TokenValidators
 
                 return true;
             }
-            catch 
+            catch
             {
                 return false;
             }

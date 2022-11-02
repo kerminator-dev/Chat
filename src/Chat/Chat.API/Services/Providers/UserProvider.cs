@@ -1,9 +1,8 @@
-﻿using Chat.API.Entities;
-using Chat.API.Exceptions;
-using Chat.API.DTOs.Requests;
+﻿using Chat.API.DTOs.Requests;
 using Chat.API.DTOs.Responses;
-using Chat.API.Services.PasswordHashers;
-using Chat.API.Services.UserRepositories;
+using Chat.API.Entities;
+using Chat.API.Exceptions;
+using Chat.API.Services.Interfaces;
 
 namespace Chat.API.Services.Providers
 {

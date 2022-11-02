@@ -1,8 +1,9 @@
 ﻿using Chat.API.DbContexts;
 using Chat.API.Entities;
+using Chat.API.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Chat.API.Services.MessageRepositories
+namespace Chat.API.Services.Implementation
 {
     public class DatabaseMessageRepository : IMessageRepository
     {
@@ -46,10 +47,10 @@ namespace Chat.API.Services.MessageRepositories
             return await _dbContext.Messages.FirstOrDefaultAsync(m => m.Id == messageId && m.DialogueId == dialogueId);
         }
 
-        public async Task<ICollection<DialogueMessage>> Get(Dialogue dialogue, int count, int offset = 0)
+        public async Task<ICollection<DialogueMessage>> Get(int dialogueId, int count, int offset = 0)
         {
-            return await _dbContext.Messages.Where(m => m.DialogueId == dialogue.Id).OrderByDescending(m => m.Id).Skip(offset).Take(count).ToListAsync();
-           // return await _dbContext.Messages.Where(m => m.DialogueId == dialogue.Id).TakeLast(count).ToListAsync();
+            return await _dbContext.Messages.Where(m => m.DialogueId == dialogueId).OrderByDescending(m => m.Id).Skip(offset).Take(count).ToListAsync();
+            // return await _dbContext.Messages.Where(m => m.DialogueId == dialogue.Id).TakeLast(count).ToListAsync();
         }
 
         public async Task Update(DialogueMessage message)
