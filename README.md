@@ -64,7 +64,7 @@ The basic and general principle is simple text messaging to another users with a
 - ❌ Rewrite controllers with MediatR and CQRS pattern
 - ❌ Review database models
 - ❌ Review code semantics
-- ❌ Review exception handling
+- ✅ Review exception handling
 - ❌ Comment logic
 - ❌ Try to remake projects with a <a href="Trying to remake it for Clean Acritecture">Clean Acritecture</a> template
 
